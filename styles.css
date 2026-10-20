@@ -791,6 +791,12 @@ img {
   color: var(--on-surface-medium);
 }
 
+.empty-state__action {
+  display: flex;
+  width: max-content;
+  margin: 16px auto 0;
+}
+
 .empty-state strong {
   display: block;
   margin-bottom: 4px;

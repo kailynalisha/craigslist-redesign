@@ -257,6 +257,156 @@ const LISTINGS = [
       "Bonus points if you know places that allow dogs.",
     ],
   },
+  {
+    id: 25, title: "Scooter & bike tune-ups", price: 25, category: "services",
+    area: "NoDa", posted: "2h ago", postedLong: "2 hours ago", miles: 1,
+    coords: [35.2455, -80.8085],
+    address: ["Near N Davidson St & E 35th St", "Charlotte, NC 28205"], keywords: "scooter bike bicycle repair tune up",
+    description: [
+      "Mobile repair for kick scooters, e-scooters and bikes. Tune-ups start at $25: brakes adjusted, bolts tightened, tires checked and chains oiled.",
+      "I come to you anywhere in NoDa or Plaza Midwood. Most repairs take under an hour.",
+    ],
+  },
+  {
+    id: 26, title: "Dog walking & pet sitting", price: 20, priceSuffix: "/walk", category: "services",
+    area: "Plaza Midwood", posted: "5h ago", postedLong: "5 hours ago", miles: 3,
+    coords: [35.2200, -80.8060],
+    address: ["Serving Plaza Midwood & NoDa", "Charlotte, NC 28205"], keywords: "golden retriever dog walking pet sitting",
+    description: [
+      "Experienced dog walker, and big dogs are my favorite (I grew up with two golden retrievers). 30-minute walks are $20, and overnight pet sitting is available too.",
+      "Insured, with references. Meet-and-greets are free.",
+    ],
+  },
+  {
+    id: 27, title: "Math & coding tutoring", price: 30, priceSuffix: "/hr", category: "services",
+    area: "University City", posted: "1d ago", postedLong: "1 day ago", miles: 9,
+    coords: [35.3071, -80.7352],
+    address: ["Near UNC Charlotte campus", "Charlotte, NC 28262"], keywords: "tutoring math coding programming",
+    description: [
+      "Computer science senior tutoring calculus, statistics and intro programming (Python, Java, JavaScript). $30 an hour.",
+      "Sessions can be in person on campus or over Zoom. Your first 15 minutes are free.",
+    ],
+  },
+  {
+    id: 28, title: "Scooter delivery rider", price: 18, priceSuffix: "/hr", category: "jobs",
+    area: "Uptown", posted: "3h ago", postedLong: "3 hours ago", miles: 4,
+    coords: [35.2260, -80.8420],
+    address: ["Near S Tryon St & E Trade St", "Charlotte, NC 28202"], keywords: "scooter delivery rider courier job",
+    description: [
+      "Local courier hiring riders to deliver small packages around Uptown on our electric scooters. $18 an hour, and the scooter and helmet are provided.",
+      "Shifts run 4 to 6 hours, weekdays and weekends. Must be 18+ and comfortable riding in traffic.",
+    ],
+  },
+  {
+    id: 29, title: "Dog daycare attendant", price: 15, priceSuffix: "/hr", category: "jobs",
+    area: "South End", posted: "1d ago", postedLong: "1 day ago", miles: 3,
+    coords: [35.2090, -80.8600],
+    address: ["Near South Blvd & W Tremont Ave", "Charlotte, NC 28203"], keywords: "golden retriever dog daycare pet job",
+    description: [
+      "Busy dog daycare looking for part-time attendants. You'll spend the day with a pack that includes lots of labs and golden retrievers. $15 an hour.",
+      "Must be comfortable with large dogs and on your feet all shift. We'll train you on safety and play groups.",
+    ],
+  },
+  {
+    id: 30, title: "Campus library assistant", price: 13, priceSuffix: "/hr", category: "jobs",
+    area: "University City", posted: "4d ago", postedLong: "4 days ago", miles: 9,
+    coords: [35.3058, -80.7320],
+    address: ["UNC Charlotte area", "Charlotte, NC 28223"], keywords: "library assistant student job campus",
+    description: [
+      "Part-time library assistant: shelving, helping at the front desk and checking out laptops. 10 to 15 hours a week, $13 an hour.",
+      "Flexible around class schedules, and great for students.",
+    ],
+  },
+  {
+    id: 31, title: "Weekend scooter group ride", price: null, category: "community",
+    area: "South End", posted: "6h ago", postedLong: "6 hours ago", miles: 3,
+    coords: [35.2125, -80.8575],
+    address: ["Rail Trail at Camden Rd", "Charlotte, NC 28203"], keywords: "scooter ride group community",
+    description: [
+      "Casual group ride every Sunday at 10am along the Rail Trail. Kick scooters, e-scooters and bikes are all welcome, at a slow, friendly pace.",
+      "We usually end at a coffee shop. Helmets strongly encouraged!",
+    ],
+  },
+  {
+    id: 32, title: "Free moving boxes", price: null, category: "community",
+    area: "Dilworth", posted: "9h ago", postedLong: "9 hours ago", miles: 3,
+    coords: [35.2055, -80.8480],
+    address: ["Near Park Rd & Ideal Way", "Charlotte, NC 28203"], keywords: "free boxes moving",
+    description: [
+      "Just finished moving and have about 30 boxes in mixed sizes, plus packing paper. Free to anyone who can use them.",
+      "They're on the porch. Please take as many as you need.",
+    ],
+  },
+  {
+    id: 33, title: "Lost cat in Dilworth", price: null, category: "community",
+    area: "Dilworth", posted: "2d ago", postedLong: "2 days ago", miles: 3,
+    coords: [35.2075, -80.8545],
+    address: ["Near East Blvd & Kenilworth Ave", "Charlotte, NC 28203"], keywords: "lost cat pet",
+    description: [
+      "Our gray tabby, Pepper, slipped out on Sunday night. She's shy, microchipped and wearing a blue collar.",
+      "Please check your garages and sheds. Reply here if you see her, and thank you!",
+    ],
+  },
+  {
+    id: 34, title: "Are scooters allowed on the greenway?", price: null, category: "discussion",
+    area: "NoDa", posted: "4h ago", postedLong: "4 hours ago", miles: 1,
+    coords: [35.2440, -80.8030],
+    address: ["Little Sugar Creek Greenway", "Charlotte, NC 28205"], keywords: "scooter greenway rules e-scooter",
+    description: [
+      "Does anyone know the rules for e-scooters on the Charlotte greenways? I've seen people riding them, but I've also heard you can get ticketed.",
+      "Looking for a safe route from NoDa to Uptown that isn't on a busy road.",
+    ],
+  },
+  {
+    id: 35, title: "Brunch spots in South End?", price: null, category: "discussion",
+    area: "South End", posted: "1d ago", postedLong: "1 day ago", miles: 3,
+    coords: [35.2110, -80.8590],
+    address: ["South End", "Charlotte, NC 28203"], keywords: "food brunch restaurant",
+    description: [
+      "Parents are visiting this weekend. Where's the best brunch in South End that takes reservations?",
+      "Bonus points for outdoor seating.",
+    ],
+  },
+  {
+    id: 36, title: "Quiet study spots near campus", price: null, category: "discussion",
+    area: "University City", posted: "2d ago", postedLong: "2 days ago", miles: 9,
+    coords: [35.3065, -80.7340],
+    address: ["University City", "Charlotte, NC 28262"], keywords: "study campus coffee student",
+    description: [
+      "The library gets packed during exam weeks. What are your favorite quiet places to study near UNC Charlotte?",
+      "Coffee shops, parks, anything with Wi-Fi and outlets.",
+    ],
+  },
+  {
+    id: 37, title: "Scooter & bike swap meet", price: 0, category: "events",
+    area: "Plaza Midwood", posted: "5h ago", postedLong: "5 hours ago", miles: 3,
+    coords: [35.2205, -80.8090],
+    address: ["Near Central Ave & Hamorton Pl", "Charlotte, NC 28205"], keywords: "scooter bike swap meet event",
+    description: [
+      "Buy, sell or trade used scooters, bikes, helmets and parts. Saturday from 9am to 1pm in the parking lot.",
+      "Free to browse, and seller tables are free too. Bring cash!",
+    ],
+  },
+  {
+    id: 38, title: "Golden retriever meetup", price: 0, category: "events",
+    area: "NoDa", posted: "1d ago", postedLong: "1 day ago", miles: 1,
+    coords: [35.2485, -80.8060],
+    address: ["Near E 36th St & N Davidson St", "Charlotte, NC 28205"], keywords: "golden retriever dog meetup event",
+    description: [
+      "Monthly golden retriever playdate at the dog park, Saturday at 10am. Goldens and golden mixes of all ages are welcome!",
+      "Bring water for your pup. Last month we had over 20 goldens show up.",
+    ],
+  },
+  {
+    id: 39, title: "Outdoor movie night", price: 5, category: "events",
+    area: "Uptown", posted: "3d ago", postedLong: "3 days ago", miles: 4,
+    coords: [35.2280, -80.8460],
+    address: ["Romare Bearden Park area", "Charlotte, NC 28202"], keywords: "movie outdoor event night",
+    description: [
+      "Outdoor screening on Friday at dusk on the big lawn. $5 suggested donation, and food trucks will be on site.",
+      "Bring a blanket or a low chair. It moves inside if it rains.",
+    ],
+  },
 ];
 
 const SUGGESTIONS = ["scooter", "golden retriever"];
@@ -514,6 +664,13 @@ function initSearchPage() {
       const empty = el("li", "empty-state");
       empty.style.gridColumn = "1 / -1";
       empty.append(el("strong", "", "No listings found"), document.createTextNode("Try a different search or clear a filter."));
+      // searched + filtered to a category: offer that whole category without the search
+      if (query && state.category) {
+        const label = CATEGORIES[state.category].label;
+        const link = el("a", "btn btn--outline empty-state__action", `See all ${label}`);
+        link.href = "search.html?category=" + state.category;
+        empty.append(link);
+      }
       grid.append(empty);
     }
   }
