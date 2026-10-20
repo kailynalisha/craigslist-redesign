@@ -18,3 +18,6 @@ Add an object to the `LISTINGS` array at the top of `app.js` with a new `id`. Us
 
 ## Editing
 Open the repo on github.com and press `.` to edit in the browser, or clone it and open the folder in VS Code. Changes pushed to `main` go live in about a minute.
+
+### After editing `styles.css` or `app.js`
+Every page loads them as `styles.css?v=…` and `app.js?v=…`. When you change either file, bump that number in all the `.html` files (any new number works) so browsers download the new version instead of reusing an old cached copy.

@@ -102,6 +102,11 @@ img {
   display: block;
 }
 
+/* the hidden attribute always wins over display rules below */
+[hidden] {
+  display: none !important;
+}
+
 .icon {
   filter: var(--icon-filter);
 }
