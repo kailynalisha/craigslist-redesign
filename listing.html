@@ -15,7 +15,8 @@
   <meta property="og:description" content="Buy, sell and connect around Charlotte. A responsive Craigslist redesign by ITIS 4390 Group 6." />
   <meta property="og:image" content="https://kailynalisha.github.io/craigslist-redesign/assets/og-image.png" />
   <meta name="twitter:card" content="summary_large_image" />
-  <link rel="stylesheet" href="styles.css?v=202610201906" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+  <link rel="stylesheet" href="styles.css?v=202610201913" />
   <script>
     try { document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"; } catch (e) {}
   </script>
@@ -84,9 +85,10 @@
           <h2 class="mobile-only">Location</h2>
           <div class="location-card__text">
             <address id="listing-address"></address>
+            <a class="location-card__directions" id="listing-directions" href="#" target="_blank" rel="noopener">Open in Google Maps</a>
             <a class="btn btn--primary desktop-only" href="contact.html" data-contact-link>Contact Seller</a>
           </div>
-          <div class="location-card__map">
+          <div class="location-card__map" id="listing-map">
             <img class="icon" src="assets/location-on.svg" width="40" height="40" alt="Map placeholder" />
           </div>
         </section>
@@ -98,6 +100,7 @@
     </div>
   </main>
 
-  <script src="app.js?v=202610201906"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script src="app.js?v=202610201913"></script>
 </body>
 </html>
