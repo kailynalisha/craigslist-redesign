@@ -7,6 +7,14 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+Pro:wght@600&display=swap" rel="stylesheet" />
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+  <meta name="theme-color" content="#800080" />
+  <meta name="description" content="Buy, sell and connect around Charlotte. A responsive Craigslist redesign by ITIS 4390 Group 6." />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="craigslist redesign" />
+  <meta property="og:description" content="Buy, sell and connect around Charlotte. A responsive Craigslist redesign by ITIS 4390 Group 6." />
+  <meta property="og:image" content="https://kailynalisha.github.io/craigslist-redesign/assets/og-image.png" />
+  <meta name="twitter:card" content="summary_large_image" />
   <link rel="stylesheet" href="styles.css" />
   <script>
     try { document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"; } catch (e) {}
@@ -14,6 +22,7 @@
 </head>
 
 <body data-page="listing">
+  <a class="skip-link" href="#main">Skip to content</a>
   <header>
     <div class="navbar">
       <a class="brand" href="index.html">
@@ -45,7 +54,7 @@
     </div>
   </header>
 
-  <main class="listing">
+  <main class="listing" id="main">
     <div class="page-bar mobile-only">
       <a class="btn btn--outline" href="search.html" data-back>Back</a>
       <p class="page-bar__title">Listing details</p>
@@ -59,7 +68,7 @@
         <div class="listing__facts desktop-only">
           <span class="tag" id="listing-tag">For Sale</span>
           <div>
-            <p><strong>Condition</strong>: n/a</p>
+            <p id="listing-condition-row"><strong>Condition</strong>: <span id="listing-condition"></span></p>
             <p><strong>Posted</strong>: <span id="listing-posted"></span></p>
           </div>
         </div>
@@ -67,14 +76,14 @@
 
       <article class="listing__info">
         <h1 class="listing__title" id="listing-title"></h1>
-        <p class="listing__price"><span class="desktop-only">Price: </span><span id="listing-price"></span></p>
+        <p class="listing__price" id="listing-price-row"><span class="desktop-only">Price: </span><span id="listing-price"></span></p>
         <p class="listing__meta mobile-only" id="listing-meta"></p>
         <div class="listing__desc" id="listing-desc"></div>
 
         <section class="location-card" aria-label="Location">
           <h2 class="mobile-only">Location</h2>
           <div class="location-card__text">
-            <address>123 Main Street<br />City, State 45678</address>
+            <address id="listing-address"></address>
             <a class="btn btn--primary desktop-only" href="contact.html" data-contact-link>Contact Seller</a>
           </div>
           <div class="location-card__map">

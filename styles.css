@@ -119,6 +119,22 @@ img {
   white-space: nowrap;
 }
 
+.skip-link {
+  position: absolute;
+  top: -100px;
+  left: 16px;
+  z-index: 200;
+  padding: 8px 16px;
+  background: var(--surface);
+  color: var(--on-surface);
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+}
+
+.skip-link:focus {
+  top: 8px;
+}
+
 :focus-visible {
   outline: 3px solid var(--primary);
   outline-offset: 2px;
@@ -583,6 +599,60 @@ img {
 }
 
 /* =========================================================
+   FILTER CHIPS (desktop sidebar + mobile row)
+   ========================================================= */
+.chip {
+  flex-shrink: 0;
+  padding: 6px 10px;
+  background: none;
+  border: 1px solid var(--outline);
+  border-radius: var(--radius-lg);
+  font-size: 14px;
+  line-height: 20px;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.chip:hover {
+  background: var(--surface-raised);
+}
+
+.chip[aria-pressed="true"] {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: var(--on-primary);
+}
+
+:root[data-theme="dark"] .chip[aria-pressed="true"] {
+  background: var(--container);
+  border-color: var(--container);
+}
+
+.chip--sort {
+  border-color: var(--primary);
+  color: var(--primary);
+  font-weight: 600;
+}
+
+:root[data-theme="dark"] .chip--sort {
+  border-color: var(--outline);
+  color: var(--on-surface);
+}
+
+.mobile-filters {
+  display: flex;
+  gap: 8px;
+  margin: -6px 0 16px;
+  padding: 2px 8px 4px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.mobile-filters::-webkit-scrollbar {
+  display: none;
+}
+
+/* =========================================================
    SEARCH RESULTS
    ========================================================= */
 .results-page {
@@ -877,6 +947,7 @@ img {
 .contact-bar {
   position: sticky;
   bottom: 0;
+  margin-top: auto;
   padding: 12px 16px 16px;
   background: var(--surface);
   box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.06);
@@ -993,6 +1064,45 @@ img {
   font-size: 24px;
   font-weight: 700;
   line-height: normal;
+}
+
+/* =========================================================
+   404 PAGE
+   ========================================================= */
+.not-found {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 48px 16px;
+  text-align: center;
+}
+
+.not-found .not-found__code {
+  font-size: 96px;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--primary);
+}
+
+.not-found h1 {
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.not-found p {
+  max-width: 36ch;
+  color: var(--on-surface-medium);
+}
+
+.not-found__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 8px;
 }
 
 /* =========================================================
@@ -1192,31 +1302,6 @@ img {
 
   .filter-group__options[hidden] {
     display: none;
-  }
-
-  .chip {
-    padding: 6px 10px;
-    background: none;
-    border: 1px solid var(--outline);
-    border-radius: var(--radius-lg);
-    font-size: 14px;
-    line-height: 20px;
-    cursor: pointer;
-  }
-
-  .chip:hover {
-    background: var(--surface-raised);
-  }
-
-  .chip[aria-pressed="true"] {
-    background: var(--primary);
-    border-color: var(--primary);
-    color: var(--on-primary);
-  }
-
-  :root[data-theme="dark"] .chip[aria-pressed="true"] {
-    background: var(--container);
-    border-color: var(--container);
   }
 
   .results {

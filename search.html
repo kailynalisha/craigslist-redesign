@@ -7,6 +7,14 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+Pro:wght@600&display=swap" rel="stylesheet" />
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+  <meta name="theme-color" content="#800080" />
+  <meta name="description" content="Buy, sell and connect around Charlotte. A responsive Craigslist redesign by ITIS 4390 Group 6." />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="craigslist redesign" />
+  <meta property="og:description" content="Buy, sell and connect around Charlotte. A responsive Craigslist redesign by ITIS 4390 Group 6." />
+  <meta property="og:image" content="https://kailynalisha.github.io/craigslist-redesign/assets/og-image.png" />
+  <meta name="twitter:card" content="summary_large_image" />
   <link rel="stylesheet" href="styles.css" />
   <script>
     try { document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"; } catch (e) {}
@@ -14,6 +22,7 @@
 </head>
 
 <body data-page="search">
+  <a class="skip-link" href="#main">Skip to content</a>
   <header>
     <div class="navbar">
       <a class="brand" href="index.html">
@@ -46,6 +55,7 @@
   </header>
 
   <!-- loading state -->
+  <div id="main" tabindex="-1">
   <div id="loading" role="status">
     <div class="progress"><div class="progress__bar"></div></div>
     <div class="loading">
@@ -93,12 +103,25 @@
 
     <section class="results" aria-labelledby="results-heading">
       <div class="results__toolbar">
-        <button class="btn btn--outline" type="button" id="sort">Sort</button>
+        <button class="btn btn--outline" type="button" aria-pressed="false" data-sort>Sort</button>
         <span class="results__count" id="results-count" aria-live="polite"></span>
+      </div>
+      <div class="mobile-filters mobile-only" role="group" aria-label="Sort and filter">
+        <button class="chip chip--sort" type="button" aria-pressed="false" data-sort>Sort</button>
+        <button class="chip" type="button" aria-pressed="false" data-filter="category" data-value="for-sale">For Sale</button>
+        <button class="chip" type="button" aria-pressed="false" data-filter="category" data-value="services">Services</button>
+        <button class="chip" type="button" aria-pressed="false" data-filter="category" data-value="jobs">Jobs</button>
+        <button class="chip" type="button" aria-pressed="false" data-filter="category" data-value="community">Community</button>
+        <button class="chip" type="button" aria-pressed="false" data-filter="category" data-value="discussion">Discussion</button>
+        <button class="chip" type="button" aria-pressed="false" data-filter="category" data-value="events">Events</button>
+        <button class="chip" type="button" aria-pressed="false" data-filter="price" data-value="under50">Under $50</button>
+        <button class="chip" type="button" aria-pressed="false" data-filter="price" data-value="50to200">$50–$200</button>
+        <button class="chip" type="button" aria-pressed="false" data-filter="price" data-value="over200">Over $200</button>
       </div>
       <ul class="listing-grid" id="results-grid"></ul>
     </section>
   </main>
+  </div>
 
   <script src="app.js"></script>
 </body>

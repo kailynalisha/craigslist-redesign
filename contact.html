@@ -7,6 +7,14 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+Pro:wght@600&display=swap" rel="stylesheet" />
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+  <meta name="theme-color" content="#800080" />
+  <meta name="description" content="Buy, sell and connect around Charlotte. A responsive Craigslist redesign by ITIS 4390 Group 6." />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="craigslist redesign" />
+  <meta property="og:description" content="Buy, sell and connect around Charlotte. A responsive Craigslist redesign by ITIS 4390 Group 6." />
+  <meta property="og:image" content="https://kailynalisha.github.io/craigslist-redesign/assets/og-image.png" />
+  <meta name="twitter:card" content="summary_large_image" />
   <link rel="stylesheet" href="styles.css" />
   <script>
     try { document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"; } catch (e) {}
@@ -14,6 +22,7 @@
 </head>
 
 <body data-page="contact">
+  <a class="skip-link" href="#main">Skip to content</a>
   <header>
     <div class="navbar">
       <a class="brand" href="index.html">
@@ -45,7 +54,7 @@
     </div>
   </header>
 
-  <main class="contact">
+  <main class="contact" id="main">
     <div class="page-bar mobile-only">
       <a class="btn btn--outline" href="index.html" data-back>Back</a>
       <p class="page-bar__title">Contact Seller</p>

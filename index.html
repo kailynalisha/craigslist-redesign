@@ -7,6 +7,14 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+Pro:wght@600&display=swap" rel="stylesheet" />
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+  <meta name="theme-color" content="#800080" />
+  <meta name="description" content="Buy, sell and connect around Charlotte. A responsive Craigslist redesign by ITIS 4390 Group 6." />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="craigslist redesign" />
+  <meta property="og:description" content="Buy, sell and connect around Charlotte. A responsive Craigslist redesign by ITIS 4390 Group 6." />
+  <meta property="og:image" content="https://kailynalisha.github.io/craigslist-redesign/assets/og-image.png" />
+  <meta name="twitter:card" content="summary_large_image" />
   <link rel="stylesheet" href="styles.css" />
   <!-- apply saved theme before the page paints -->
   <script>
@@ -15,6 +23,7 @@
 </head>
 
 <body data-page="home">
+  <a class="skip-link" href="#main">Skip to content</a>
   <header class="navbar">
     <button class="menu-btn mobile-only" type="button" aria-label="Open menu" data-open-menu>
       <img src="assets/menu-white.svg" width="33" height="30" alt="" />
@@ -26,7 +35,7 @@
     </a>
   </header>
 
-  <main class="home">
+  <main class="home" id="main">
     <h1 class="home__title">Find something nearby</h1>
 
     <form class="search" action="search.html" role="search">
