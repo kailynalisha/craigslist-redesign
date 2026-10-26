@@ -13,6 +13,13 @@ A responsive Craigslist redesign built from our high-fidelity Figma prototype (I
 
 `styles.css` holds the layout and light/dark colors; `app.js` holds the listing data and interactions. Icons, the favicon and the link-preview image are in `assets/`.
 
+## Running locally
+No dependencies or build step are required. Open the project folder in VS Code, start a terminal in the folder, and run in powershell:
+```
+py -m http.server 8000
+```
+Then open http://localhost:8000 and start at `index.html`. Stop the server with `Ctrl+C` in the terminal.
+
 ### Adding a listing
 Add an object to the `LISTINGS` array at the top of `app.js` with a new `id`. Use `price: 0` for free items and `price: null` for posts with no price (discussions, community posts). `condition` is optional and only shows when set.
 
