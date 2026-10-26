@@ -77,20 +77,42 @@
   --error: #f2b8b5;
   --card-border: #3e3b43;
 
-  --icon-filter: brightness(0) invert(83%) sepia(14%) saturate(1200%) hue-rotate(212deg);
+  --icon-filter: brightness(0) invert(83%) sepia(14%) saturate(1200%)
+    hue-rotate(212deg);
   --icon-muted-filter: invert(1) brightness(1.05);
 }
 
 /* BASE STYLES */
+html {
+  height: 100%;
+  overflow: hidden;
+}
+
 body {
   font-family: var(--font-body);
   line-height: 1.5;
   background: var(--background);
   color: var(--on-surface);
-  min-height: 100vh;
+  height: 100vh;
+  display: flex;
+  overflow: hidden;
+  flex-direction: column;
+  transition:
+    background-color 0.25s ease,
+    color 0.25s ease;
+}
+
+/* prevents header from squeezing when allowing content under to scroll */
+body > header {
+  flex-shrink: 0;
+}
+
+body[data-page="search"] > #main {
+  flex: 1;
+  min-height: 0;
   display: flex;
   flex-direction: column;
-  transition: background-color 0.25s ease, color 0.25s ease;
+  overflow: hidden;
 }
 
 a {
@@ -171,7 +193,10 @@ img {
   text-decoration: none;
   white-space: nowrap;
   cursor: pointer;
-  transition: filter 0.15s ease, background-color 0.15s ease, transform 0.1s ease;
+  transition:
+    filter 0.15s ease,
+    background-color 0.15s ease,
+    transform 0.1s ease;
 }
 
 .btn:hover {
@@ -468,7 +493,10 @@ img {
   font-weight: 700;
   text-align: center;
   text-decoration: none;
-  transition: transform 0.2s ease, filter 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    filter 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .category-card:hover {
@@ -670,6 +698,12 @@ img {
   scrollbar-width: none;
 }
 
+/* keep filter and sort controls above cards on mobile */
+.results__toolbar,
+.mobile-filters {
+  flex-shrink: 0;
+}
+
 .mobile-filters::-webkit-scrollbar {
   display: none;
 }
@@ -677,9 +711,25 @@ img {
 /* =========================================================
    SEARCH RESULTS
    ========================================================= */
+
+.results {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow-y: scroll;
+}
+
 .results-page {
   flex: 1;
   padding: 14px 6px 32px;
+
+  /* min height lets content shrink into available space */
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
 .results-page__heading {
@@ -702,6 +752,11 @@ img {
   grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
   gap: 18px 5px;
   list-style: none;
+
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  align-content: start;
 }
 
 .listing-card {
@@ -714,7 +769,9 @@ img {
   border-radius: var(--radius-md);
   overflow: hidden;
   text-decoration: none;
-  transition: box-shadow 0.15s ease, transform 0.15s ease;
+  transition:
+    box-shadow 0.15s ease,
+    transform 0.15s ease;
 }
 
 .listing-card:hover {
@@ -877,6 +934,14 @@ img {
   flex: 1;
   display: flex;
   flex-direction: column;
+
+  min-height: 0;
+  overflow-y: auto;
+}
+
+/* only applies to front layer of children in listing */
+.listing > * {
+  flex-shrink: 0;
 }
 
 .listing__layout {
@@ -1247,7 +1312,7 @@ img {
     flex: 1;
     justify-content: center;
     align-items: center;
-    gap: 100px;
+    gap: 60px;
     margin: 0;
     padding: 48px 118px 120px;
   }
@@ -1306,10 +1371,16 @@ img {
   }
 
   /* search results */
+  .results {
+    gap: 32px;
+    overflow: hidden;
+  }
+
   .results-page {
     display: flex;
     gap: 48px;
     padding: 24px 75px 32px;
+    flex-direction: row;
   }
 
   .results-page__heading {
@@ -1322,7 +1393,9 @@ img {
     gap: 15px;
     flex: 0 0 345px;
     align-self: flex-start;
-    min-height: 788px;
+    min-height: 0;
+    max-height: 100%;
+    overflow-y: auto;
     padding: 20px 45px 24px;
     background: var(--filter-panel);
     border-radius: var(--radius-md);
@@ -1377,14 +1450,6 @@ img {
 
   .filter-group__options[hidden] {
     display: none;
-  }
-
-  .results {
-    flex: 1;
-    min-width: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 32px;
   }
 
   .results__toolbar {
