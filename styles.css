@@ -1100,6 +1100,7 @@ img {
   flex: 1;
   display: flex;
   flex-direction: column;
+  min-height: 0;
 }
 
 .contact__body {
@@ -1596,10 +1597,12 @@ img {
 
   /* contact seller */
   .contact__body {
+    flex: 1;
+    min-height: 0;
     width: min(880px, 100% - 64px);
-    margin: auto;
+    margin: 0 auto;
     gap: 13px;
-    padding: 48px 0;
+    padding: 25px 0;
   }
 
   .contact__title {
@@ -1614,12 +1617,20 @@ img {
     line-height: 24px;
   }
 
+  .message-form {
+    flex: 1;
+    min-height: 0;
+  }
+
   .message-form label {
+    flex: 1;
+    min-height: 80px;
     position: absolute;
     width: 1px;
-    height: 1px;
+    height: auto;
     overflow: hidden;
     clip: rect(0 0 0 0);
+    resize: none;
   }
 
   .message-form textarea {
