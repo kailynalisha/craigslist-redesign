@@ -692,7 +692,7 @@ img {
 .mobile-filters {
   display: flex;
   gap: 8px;
-  margin: -6px 0 16px;
+  margin: 0 0 16px;
   padding: 2px 8px 4px;
   overflow-x: auto;
   scrollbar-width: none;
@@ -799,6 +799,10 @@ img {
   transform: scale(1.15) rotate(-4deg);
 }
 
+.listing-card:hover .listing-card__thumb--photo img {
+  transform: scale(1.05);
+}
+
 .listing-card__thumb {
   display: grid;
   place-items: center;
@@ -809,6 +813,17 @@ img {
 .listing-card__thumb img {
   width: 40px;
   height: 40px;
+}
+
+.listing-card__thumb--photo {
+  display: block;
+  overflow: hidden;
+}
+
+.listing-card__thumb--photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .listing-card__body {
@@ -964,6 +979,24 @@ img {
   height: 48px;
 }
 
+.listing__thumb--photo {
+  overflow: hidden;
+}
+
+.listing__thumb img.listing__photo {
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  object-position: center;
+}
+
+.listing__thumb img.listing__photo--inset {
+  max-width: 92%;
+  max-height: 92%;
+}
+
 .listing__info {
   display: flex;
   flex-direction: column;
@@ -1087,6 +1120,7 @@ img {
 .contact-bar {
   position: sticky;
   bottom: 0;
+  z-index: 1000;
   margin-top: auto;
   padding: 12px 16px 16px;
   background: var(--surface);

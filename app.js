@@ -19,6 +19,7 @@ const CATEGORIES = {
 const LISTINGS = [
   {
     id: 1, title: "Scooter in progress!", heading: "Scooter", price: 120, category: "for-sale",
+    image: "assets/listings/scooterinprogress.PNG",
     area: "NoDa", posted: "2d ago", postedLong: "2 days ago", miles: 1, condition: "Fair",
     coords: [35.2479, -80.8076],
     address: ["Near 36th St & N Davidson St", "Charlotte, NC 28205"], keywords: "scooter kick",
@@ -29,6 +30,7 @@ const LISTINGS = [
   },
   {
     id: 2, title: "Bike", heading: "Hybrid commuter bike", price: 350, category: "for-sale",
+    image: "assets/listings/bike.PNG",
     area: "Plaza Midwood", posted: "10h ago", postedLong: "10 hours ago", miles: 3, condition: "Good",
     coords: [35.221, -80.8105],
     address: ["Near Central Ave & The Plaza", "Charlotte, NC 28205"], keywords: "scooter bike bicycle commuter",
@@ -39,6 +41,8 @@ const LISTINGS = [
   },
   {
     id: 3, title: "Chair", heading: "Wooden kitchen chair", price: 5, category: "for-sale",
+    image: "assets/listings/chair.PNG",
+    imageInset: true,
     area: "NoDa", posted: "11h ago", postedLong: "11 hours ago", miles: 1, condition: "Fair",
     coords: [35.2462, -80.8095],
     address: ["Near N Davidson St & E 35th St", "Charlotte, NC 28205"], keywords: "scooter chair furniture",
@@ -79,6 +83,7 @@ const LISTINGS = [
   },
   {
     id: 7, title: "Golden puppy", price: 120, category: "for-sale",
+    image: "assets/listings/puppies.PNG",
     area: "NoDa", posted: "2d ago", postedLong: "2 days ago", miles: 1,
     coords: [35.249, -80.8045],
     address: ["Near E 36th St & Cullman Ave", "Charlotte, NC 28205"], keywords: "golden retriever dog puppy pet",
@@ -89,6 +94,7 @@ const LISTINGS = [
   },
   {
     id: 8, title: "golden retriever", price: 143.08, category: "for-sale",
+    image: "assets/listings/golden3-1.PNG",
     area: "Plaza Midwood", posted: "10h ago", postedLong: "4 days ago", miles: 3,
     coords: [35.2165, -80.803],
     address: ["Near Commonwealth Ave & Thomas Ave", "Charlotte, NC 28205"], keywords: "golden retriever dog pet",
@@ -129,6 +135,8 @@ const LISTINGS = [
   },
   {
     id: 12, title: "lost golden retriever at noda?", price: null, category: "community",
+    image: "assets/listings/lostdog.PNG",
+    imageInset: true,
     area: "NoDa", posted: "1d ago", postedLong: "1 day ago", miles: 1,
     coords: [35.245, -80.811],
     address: ["Near N Davidson St & E 34th St", "Charlotte, NC 28205"], keywords: "golden retriever dog lost pet",
@@ -149,6 +157,7 @@ const LISTINGS = [
   },
   {
     id: 14, title: "Phone & laptop screen repair", price: 60, category: "services",
+    image: "assets/listings/phoneandlaptop.PNG",
     area: "University City", posted: "5h ago", postedLong: "5 hours ago", miles: 9,
     coords: [35.3076, -80.7337],
     address: ["Near University City Blvd & JW Clay Blvd", "Charlotte, NC 28262"], keywords: "phone laptop screen repair tech",
@@ -159,6 +168,7 @@ const LISTINGS = [
   },
   {
     id: 15, title: "Apartment & house cleaning", price: 90, category: "services",
+    image: "assets/listings/cleaning.PNG",
     area: "Dilworth", posted: "1d ago", postedLong: "1 day ago", miles: 3,
     coords: [35.204, -80.85],
     address: ["Serving Dilworth & Myers Park", "Charlotte, NC 28203"], keywords: "cleaning house apartment move out",
@@ -229,6 +239,8 @@ const LISTINGS = [
   },
   {
     id: 22, title: "Book swap meetup", price: null, category: "community",
+    image: "assets/listings/bookswap.PNG",
+    imageInset: true,
     area: "Uptown", posted: "5d ago", postedLong: "5 days ago", miles: 4,
     coords: [35.2295, -80.841],
     address: ["Near N Tryon St & E 6th St", "Charlotte, NC 28202"], keywords: "book swap reading meetup",
@@ -591,7 +603,14 @@ function listingCard(item, index = 0) {
   link.style.setProperty("--i", Math.min(index, 12)); // staggers the fade-in
 
   const thumb = el("div", "listing-card__thumb");
-  thumb.append(img(CATEGORIES[item.category].icon, "icon"));
+  if (item.image) {
+    const photo = img(item.image, "listing-card__photo");
+    photo.alt = item.title;
+    thumb.classList.add("listing-card__thumb--photo");
+    thumb.append(photo);
+  } else {
+    thumb.append(img(CATEGORIES[item.category].icon, "icon"));
+  }
 
   const body = el("div", "listing-card__body");
   const meta = el("p", "listing-card__meta");
@@ -747,7 +766,17 @@ function initListingPage() {
   document.getElementById("listing-condition").textContent = item.condition || "";
   document.getElementById("listing-condition-row").hidden = !item.condition;
   document.getElementById("listing-posted").textContent = item.postedLong;
-  document.getElementById("listing-icon").src = category.icon.replace("icon-for-sale.svg", "icon-for-sale-lg.svg");
+  const listingImage = document.getElementById("listing-icon");
+  if (item.image) {
+    listingImage.src = item.image;
+    listingImage.alt = heading;
+    listingImage.classList.remove("icon");
+    listingImage.classList.add("listing__photo");
+    if (item.imageInset) listingImage.classList.add("listing__photo--inset");
+    listingImage.parentElement.classList.add("listing__thumb--photo");
+  } else {
+    listingImage.src = category.icon.replace("icon-for-sale.svg", "icon-for-sale-lg.svg");
+  }
   document.getElementById("listing-desc").replaceChildren(...item.description.map((text) => el("p", "", text)));
 
   const address = document.getElementById("listing-address");
