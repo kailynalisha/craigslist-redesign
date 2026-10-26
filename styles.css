@@ -1356,6 +1356,7 @@ img {
     gap: 108px 80px;
     max-width: 1204px;
     margin: 0 auto;
+    overflow: hidden;
   }
 
   .category-card {
@@ -1678,6 +1679,20 @@ img {
 @media (max-width: 899px) {
   .desktop-only {
     display: none !important;
+  }
+  .home {
+    flex: 1;
+    min-height: 0;
+  }
+
+  .home > nav {
+    min-height: 0;
+    overflow-y: auto;
+  }
+
+  .home > .search,
+  .home__title {
+    flex-shrink: 0;
   }
 }
 
