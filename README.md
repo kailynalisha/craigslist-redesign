@@ -19,12 +19,3 @@ No dependencies or build step are required. Open the project folder in VS Code, 
 py -m http.server 8000
 ```
 Then open http://localhost:8000 and start at `index.html`. Stop the server with `Ctrl+C` in the terminal.
-
-### Adding a listing
-Add an object to the `LISTINGS` array at the top of `app.js` with a new `id`. Use `price: 0` for free items and `price: null` for posts with no price (discussions, community posts). `condition` is optional and only shows when set.
-
-## Editing
-Open the repo on github.com and press `.` to edit in the browser, or clone it and open the folder in VS Code. Changes pushed to `main` go live in about a minute.
-
-### After editing `styles.css` or `app.js`
-Every page loads them as `styles.css?v=…` and `app.js?v=…`. When you change either file, bump that number in all the `.html` files (any new number works) so browsers download the new version instead of reusing an old cached copy.
