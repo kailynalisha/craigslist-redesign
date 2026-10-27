@@ -868,7 +868,16 @@ function initContactPage() {
   });
 
   dialog.querySelector("[data-done]").addEventListener("click", () => {
-    location.href = item ? "listing.html?id=" + item.id : "index.html";
+    const referrer = document.referrer ? new URL(document.referrer) : null;
+    const cameFromListing =
+      referrer?.origin === location.origin && referrer.pathname.endsWith("/listing.html");
+
+    if (item && cameFromListing && history.length > 1) {
+      history.back();
+      return;
+    }
+
+    location.replace(item ? "listing.html?id=" + item.id : "index.html");
   });
 }
 
