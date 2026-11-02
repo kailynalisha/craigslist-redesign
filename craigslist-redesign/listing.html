@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Listing — craigslist</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+Pro:wght@600&display=swap" rel="stylesheet" />
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+  <meta name="theme-color" content="#800080" />
+  <meta name="description" content="Buy, sell and connect around Charlotte. A responsive Craigslist redesign by ITIS 4390 Group 6." />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="craigslist redesign" />
+  <meta property="og:description" content="Buy, sell and connect around Charlotte. A responsive Craigslist redesign by ITIS 4390 Group 6." />
+  <meta property="og:image" content="https://kailynalisha.github.io/craigslist-redesign/assets/og-image.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+  <link rel="stylesheet" href="styles.css?v=202611020001" />
+  <script>
+    try { document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"; } catch (e) {}
+  </script>
+</head>
+
+<body data-page="listing">
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header>
+    <div class="navbar">
+      <a class="brand" href="index.html">
+        <img class="brand__logo brand__logo--mobile" src="assets/logo-mobile.svg" width="38" height="38" alt="" />
+        <img class="brand__logo brand__logo--desktop" src="assets/logo-desktop.svg" width="66" height="66" alt="" />
+        <span class="brand__name">craigslist</span>
+      </a>
+    </div>
+
+    <div class="subnav">
+      <div class="subnav__left">
+        <button class="menu-btn mobile-only" type="button" aria-label="Open menu" data-open-menu>
+          <img src="assets/menu-dark.svg" width="33" height="30" alt="" />
+        </button>
+        <a class="btn btn--primary subnav__back" href="search.html" data-back>Back</a>
+        <span class="subnav__title desktop-only">Details</span>
+      </div>
+
+      <form class="search" action="search.html" role="search">
+        <div class="search__field">
+          <img class="icon-muted" src="assets/icon-search.svg" width="24" height="24" alt="" />
+          <label class="visually-hidden" for="q">Search craigslist</label>
+          <input class="search__input" id="q" type="search" name="q" placeholder="Search craigslist" autocomplete="off" />
+          <button class="search__clear" type="button" aria-label="Clear search">
+            <img class="icon-muted" src="assets/icon-close.svg" width="24" height="24" alt="" />
+          </button>
+        </div>
+      </form>
+    </div>
+  </header>
+
+  <main class="listing" id="main">
+    <div class="page-bar mobile-only">
+      <p class="page-bar__title">Listing details</p>
+    </div>
+
+    <div class="listing__layout">
+      <div class="listing__media">
+        <div class="listing__thumb">
+          <img class="icon" id="listing-icon" src="assets/icon-for-sale-lg.svg" width="48" height="48" alt="" />
+        </div>
+        <div class="listing__facts desktop-only">
+          <span class="tag" id="listing-tag">For Sale</span>
+          <div>
+            <p id="listing-condition-row"><strong>Condition</strong>: <span id="listing-condition"></span></p>
+            <p><strong>Posted</strong>: <span id="listing-posted"></span></p>
+          </div>
+        </div>
+      </div>
+
+      <article class="listing__info">
+        <h1 class="listing__title" id="listing-title"></h1>
+        <p class="listing__price" id="listing-price-row"><span class="desktop-only">Price: </span><span id="listing-price"></span></p>
+        <p class="listing__meta mobile-only" id="listing-meta"></p>
+        <div class="listing__desc" id="listing-desc"></div>
+
+        <section class="location-card" aria-label="Location">
+          <h2 class="mobile-only">Location</h2>
+          <div class="location-card__text">
+            <address id="listing-address"></address>
+            <a class="location-card__directions" id="listing-directions" href="#" target="_blank" rel="noopener">Open in Google Maps</a>
+            <a class="btn btn--primary desktop-only" href="contact.html" data-contact-link>Contact Seller</a>
+          </div>
+          <div class="location-card__map" id="listing-map">
+            <img class="icon" src="assets/location-on.svg" width="40" height="40" alt="Map placeholder" />
+          </div>
+        </section>
+      </article>
+    </div>
+
+    <div class="contact-bar mobile-only">
+      <a class="btn btn--container btn--block" href="contact.html" data-contact-link>Contact Seller</a>
+    </div>
+  </main>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script src="app.js?v=202611020001"></script>
+</body>
+</html>
