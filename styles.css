@@ -1741,6 +1741,441 @@ img {
   }
 }
 
+/* =========================================================
+   ASSIGNMENT 11 — LIVE SEARCH, LOADING STATES, MICRO-INTERACTIONS
+   ========================================================= */
+
+/* --- Animation 1: search field focus glow ---
+   Purpose: makes it obvious where you're typing. The ring eases in instead of snapping. */
+.search__field {
+  outline: 2px solid transparent;
+  box-shadow: 0 0 0 0 transparent;
+  transition:
+    outline-color 0.2s ease,
+    box-shadow 0.25s ease,
+    background-color 0.2s ease;
+}
+
+.search__field:focus-within {
+  outline-color: var(--primary);
+  box-shadow: 0 0 0 5px color-mix(in srgb, var(--primary) 18%, transparent);
+  background: var(--surface);
+}
+
+/* --- Animation 2: suggestions panel drops in ---
+   Purpose: ties the panel to the field it came from, so new results read as a response to typing. */
+.suggestions {
+  max-height: min(70vh, 460px);
+  overflow-y: auto;
+  gap: 2px;
+  padding: 10px;
+  background: var(--surface);
+  border: 1px solid var(--outline);
+  transform-origin: top center;
+  animation: drop-in 0.18s ease-out;
+}
+
+@keyframes drop-in {
+  from {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.98);
+  }
+}
+
+.suggestions__label {
+  padding: 8px 8px 2px;
+}
+
+.suggestions a.suggestion {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: auto;
+  min-height: 44px;
+  padding: 6px 8px;
+  background: transparent;
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--on-surface);
+  /* Animation 3: highlight slides in on hover/arrow keys — shows which suggestion Enter will open */
+  transition:
+    background-color 0.15s ease,
+    transform 0.15s ease;
+}
+
+.suggestions a.suggestion:hover,
+.suggestions a.suggestion.is-active {
+  background: var(--surface-raised);
+  transform: translateX(3px);
+  filter: none;
+}
+
+.suggestion__thumb {
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  overflow: hidden;
+  background: var(--thumb);
+  border-radius: var(--radius-sm);
+}
+
+.suggestion__thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.suggestion__thumb img.icon {
+  width: 22px;
+  height: 22px;
+}
+
+.suggestion__text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.suggestion__title {
+  overflow: hidden;
+  font-weight: 500;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.suggestion__title mark {
+  background: none;
+  color: var(--primary);
+  font-weight: 700;
+}
+
+.suggestion__meta {
+  font-size: 12px;
+  line-height: 16px;
+  color: var(--on-surface-medium);
+}
+
+.suggestion--category {
+  font-size: 14px;
+}
+
+.suggestion__count {
+  margin-left: auto;
+  padding: 0 8px;
+  background: var(--surface-raised);
+  border-radius: var(--radius-full);
+  font-size: 12px;
+  color: var(--on-surface-medium);
+}
+
+.suggestions a.suggestion--all {
+  justify-content: center;
+  margin-top: 6px;
+  border-top: 1px solid var(--outline);
+  border-radius: 0 0 var(--radius-sm) var(--radius-sm);
+  font-weight: 600;
+  color: var(--primary);
+}
+
+.suggestions__empty {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px 8px;
+  font-size: 14px;
+  color: var(--on-surface-medium);
+}
+
+.suggestions__empty strong {
+  color: var(--on-surface);
+  font-size: 15px;
+}
+
+.suggestions a.suggestions__tip {
+  display: inline;
+  height: auto;
+  padding: 0;
+  background: none;
+  font-size: inherit;
+  font-weight: 600;
+  color: var(--primary);
+  text-decoration: underline;
+}
+
+/* --- Search page loading: progress bar + skeleton cards --- */
+body[data-page="search"] #loading:not([hidden]) {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+#loading > * {
+  flex-shrink: 0;
+}
+
+#loading .loading {
+  min-height: 0;
+  padding: 24px 16px 16px;
+}
+
+.skeleton-grid {
+  flex: none;
+  padding: 0 12px 24px;
+  overflow: visible;
+}
+
+.skeleton-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px;
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-md);
+}
+
+/* shimmer = "content is on its way" */
+.skeleton,
+.listing-card__thumb--photo.is-loading,
+.listing__thumb--photo.is-loading,
+.listing__layout.is-loading .listing__title,
+.listing__layout.is-loading .listing__price,
+.listing__layout.is-loading .listing__desc,
+.listing__layout.is-loading address {
+  background: linear-gradient(
+    90deg,
+    var(--surface-raised) 25%,
+    color-mix(in srgb, var(--surface-raised) 55%, var(--surface)) 50%,
+    var(--surface-raised) 75%
+  );
+  background-size: 200% 100%;
+  border-radius: var(--radius-sm);
+  animation: shimmer 1.2s linear infinite;
+}
+
+@keyframes shimmer {
+  from {
+    background-position: 150% 0;
+  }
+  to {
+    background-position: -50% 0;
+  }
+}
+
+.skeleton--thumb {
+  height: 160px;
+}
+
+.skeleton--line {
+  height: 12px;
+}
+
+.skeleton--short {
+  width: 40%;
+  height: 16px;
+}
+
+.skeleton--mid {
+  width: 65%;
+}
+
+#loading.has-error .progress__bar {
+  animation: none;
+  width: 100%;
+  background: var(--error);
+}
+
+.loading__error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 24px 16px;
+  text-align: center;
+  animation: rise 0.3s ease both;
+}
+
+.loading__error p {
+  font-size: 14px;
+  color: var(--on-surface-medium);
+}
+
+/* photos fade in once loaded instead of popping in */
+.listing-card__thumb--photo img,
+.listing__thumb--photo img {
+  transition:
+    opacity 0.3s ease,
+    transform 0.2s ease;
+}
+
+.listing-card__thumb--photo.is-loading img,
+.listing__thumb--photo.is-loading img {
+  opacity: 0;
+}
+
+/* --- Listing details skeleton --- */
+.listing__layout.is-loading .listing__title {
+  width: 60%;
+  height: 32px;
+  color: transparent;
+}
+
+.listing__layout.is-loading .listing__price {
+  width: 30%;
+  height: 24px;
+  color: transparent;
+}
+
+.listing__layout.is-loading .listing__desc {
+  height: 110px;
+}
+
+.listing__layout.is-loading address {
+  display: block;
+  width: 70%;
+  height: 40px;
+}
+
+.listing__layout.is-loading .listing__thumb > img {
+  opacity: 0.3;
+}
+
+.listing__layout.is-loaded .listing__info > * {
+  animation: rise 0.35s ease both;
+}
+
+.listing__layout.is-loaded .listing__info > :nth-child(2) {
+  animation-delay: 40ms;
+}
+
+.listing__layout.is-loaded .listing__info > :nth-child(3) {
+  animation-delay: 80ms;
+}
+
+.listing__layout.is-loaded .listing__info > :nth-child(4) {
+  animation-delay: 120ms;
+}
+
+[data-contact-link][aria-disabled="true"] {
+  pointer-events: none;
+  opacity: 0.55;
+}
+
+/* --- Map loading overlay --- */
+.location-card__map.has-map {
+  position: relative;
+}
+
+.map-loading {
+  position: absolute;
+  inset: 0;
+  z-index: 500; /* above Leaflet panes */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: var(--surface-raised);
+  font-size: 14px;
+  color: var(--on-surface-medium);
+  transition: opacity 0.3s ease;
+}
+
+.map-loading.is-done {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.map-loading.is-error {
+  padding: 16px;
+  text-align: center;
+}
+
+.map-status {
+  padding: 16px;
+  font-size: 14px;
+  text-align: center;
+  color: var(--on-surface-medium);
+}
+
+/* --- Spinner (contact button, map) --- */
+.spinner {
+  display: inline-block;
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.map-loading .spinner {
+  color: var(--primary);
+}
+
+/* --- Contact form sending state --- */
+.btn.is-busy {
+  gap: 10px;
+  cursor: progress;
+}
+
+.btn:disabled {
+  opacity: 0.75;
+  filter: none;
+  transform: none;
+}
+
+.message-form textarea {
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    opacity 0.2s ease;
+}
+
+.message-form textarea:focus {
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--primary) 15%, transparent);
+}
+
+.message-form textarea:read-only {
+  opacity: 0.6;
+}
+
+.message-form__error:not([hidden]) {
+  animation: rise 0.25s ease both;
+}
+
+/* --- Message-sent dialog scales in so the confirmation is noticed --- */
+.dialog[open] {
+  animation: pop-in 0.22s ease-out;
+}
+
+.dialog[open]::backdrop {
+  animation: fade-in 0.22s ease-out;
+}
+
+@keyframes pop-in {
+  from {
+    opacity: 0;
+    transform: scale(0.94);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   @view-transition {
     navigation: none;

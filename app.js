@@ -421,9 +421,78 @@ const LISTINGS = [
   },
 ];
 
-const SUGGESTIONS = ["scooter", "golden retriever"];
+// shown as tips in the "no matches" state
+const SUGGESTIONS = ["scooter", "golden retriever", "bike", "free"];
 
 const params = new URLSearchParams(location.search);
+
+/* ---------- SEARCH MATCHING (shared by suggestions + results) ---------- */
+function queryWords(query) {
+  return query.toLowerCase().trim().split(/\s+/).filter(Boolean);
+}
+
+function listingText(item) {
+  return [item.title, item.heading, item.keywords, CATEGORIES[item.category].label, item.area, item.price === 0 ? "free" : ""]
+    .filter(Boolean)
+    .join(" ")
+    .toLowerCase();
+}
+
+function matchesQuery(item, query) {
+  const words = queryWords(query);
+  if (!words.length) return true;
+  const haystack = listingText(item);
+  return words.every((word) => haystack.includes(word));
+}
+
+// best matches first: title starts with the query > title contains it > other fields
+function rankListings(items, query) {
+  const q = query.toLowerCase().trim();
+  const score = (item) => {
+    const title = item.title.toLowerCase();
+    if (title.startsWith(q)) return 0;
+    if (title.includes(q)) return 1;
+    return 2;
+  };
+  return [...items].sort((a, b) => score(a) - score(b));
+}
+
+// returns a fragment with the matched words wrapped in <mark>
+function highlight(text, query) {
+  const words = queryWords(query).map((w) => w.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"));
+  const frag = document.createDocumentFragment();
+  if (!words.length) {
+    frag.append(text);
+    return frag;
+  }
+  const pattern = new RegExp(`(${words.join("|")})`, "gi");
+  text.split(pattern).forEach((part, i) => {
+    if (!part) return;
+    frag.append(i % 2 ? el("mark", "", part) : document.createTextNode(part));
+  });
+  return frag;
+}
+
+/* ---------- SIMULATED NETWORK ----------
+   The site has no backend, so async actions (loading results, a listing,
+   sending a message) go through this helper. It waits like a real request
+   and fails when the browser is offline, so loading + error states are real. */
+function fakeRequest(ms, value) {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      if (navigator.onLine === false) reject(new Error("offline"));
+      else resolve(value);
+    }, ms);
+  });
+}
+
+function spinner(label = "Loading") {
+  const s = el("span", "spinner");
+  s.setAttribute("role", "presentation");
+  s.setAttribute("aria-hidden", "true");
+  s.title = label;
+  return s;
+}
 
 /* ---------- HELPERS ---------- */
 function formatPrice(item) {
@@ -530,54 +599,199 @@ function buildDrawer() {
   });
 }
 
-/* ---------- SEARCH FIELD + SUGGESTIONS ---------- */
+/* ---------- SEARCH FIELD + LIVE SUGGESTIONS ---------- */
+// Suggestions update on every keystroke (no submit needed), disappear when the
+// input is cleared, and show a "no matches" message when nothing is found.
+// On the search page, typing also filters the results grid live (search:input event).
 function setupSearch(form) {
   const input = form.querySelector(".search__input");
   const clear = form.querySelector(".search__clear");
+  const onSearchPage = document.body.dataset.page === "search";
+
   const list = el("ul", "suggestions");
   list.hidden = true;
   list.id = "suggestions-" + Math.random().toString(36).slice(2, 7);
-  list.append(el("li", "suggestions__label", "Popular searches"));
-  SUGGESTIONS.forEach((term) => {
-    const li = el("li");
-    const link = el("a", "", term);
-    link.href = "search.html?q=" + encodeURIComponent(term);
-    li.append(link);
-    list.append(li);
-  });
+  list.setAttribute("role", "listbox");
+  list.setAttribute("aria-label", "Search suggestions");
   form.append(list);
+
+  // screen-reader announcement of how many suggestions there are
+  const status = el("span", "visually-hidden");
+  status.setAttribute("aria-live", "polite");
+  form.append(status);
+
+  input.setAttribute("role", "combobox");
   input.setAttribute("aria-controls", list.id);
+  input.setAttribute("aria-autocomplete", "list");
+  input.setAttribute("aria-expanded", "false");
 
   const current = params.get("q");
-  if (current && document.body.dataset.page === "search") input.value = current;
+  if (current && onSearchPage) input.value = current;
+
+  let activeIndex = -1;
+
+  function options() {
+    return [...list.querySelectorAll("[role='option']")];
+  }
+
+  function setActive(index) {
+    const opts = options();
+    opts.forEach((o) => o.classList.remove("is-active"));
+    activeIndex = opts.length ? (index + opts.length) % opts.length : -1;
+    if (activeIndex >= 0) {
+      const active = opts[activeIndex];
+      active.classList.add("is-active");
+      input.setAttribute("aria-activedescendant", active.id);
+      active.scrollIntoView({ block: "nearest" });
+    } else {
+      input.removeAttribute("aria-activedescendant");
+    }
+  }
+
+  function option(href, className) {
+    const li = el("li");
+    li.setAttribute("role", "presentation");
+    const link = el("a", className);
+    link.href = href;
+    link.id = list.id + "-opt-" + list.querySelectorAll("[role='option']").length;
+    link.setAttribute("role", "option");
+    link.tabIndex = -1;
+    li.append(link);
+    list.append(li);
+    return link;
+  }
+
+  function label(text) {
+    const li = el("li", "suggestions__label", text);
+    li.setAttribute("role", "presentation");
+    list.append(li);
+  }
+
+  function hide() {
+    list.hidden = true;
+    input.setAttribute("aria-expanded", "false");
+    setActive(-1);
+  }
+
+  function show() {
+    list.hidden = false;
+    input.setAttribute("aria-expanded", "true");
+  }
+
+  function renderSuggestions() {
+    const query = input.value.trim();
+    list.replaceChildren();
+    activeIndex = -1;
+    input.removeAttribute("aria-activedescendant");
+
+    // cleared input → suggestions disappear
+    if (!query) {
+      hide();
+      status.textContent = "";
+      return;
+    }
+
+    const matches = rankListings(LISTINGS.filter((item) => matchesQuery(item, query)), query);
+
+    if (matches.length === 0) {
+      const empty = el("li", "suggestions__empty");
+      empty.setAttribute("role", "presentation");
+      empty.append(el("strong", "", `No matches for “${query}”`));
+      const tip = el("span", "", "Check the spelling or try ");
+      const tips = SUGGESTIONS.filter((t) => !queryWords(query).includes(t)).slice(0, 2);
+      tips.forEach((term, i) => {
+        const a = el("a", "suggestions__tip", term);
+        a.href = "search.html?q=" + encodeURIComponent(term);
+        tip.append(i ? " or " : "", a);
+      });
+      empty.append(tip);
+      list.append(empty);
+      status.textContent = "No suggestions";
+      show();
+      return;
+    }
+
+    label("Listings");
+    matches.slice(0, 5).forEach((item) => {
+      const link = option("listing.html?id=" + item.id, "suggestion");
+      const thumb = el("span", "suggestion__thumb");
+      thumb.append(img(item.image || CATEGORIES[item.category].icon, item.image ? "" : "icon"));
+      const text = el("span", "suggestion__text");
+      const title = el("span", "suggestion__title");
+      title.append(highlight(item.title, query));
+      const metaParts = item.price === null ? [CATEGORIES[item.category].label, item.area] : [formatPrice(item), CATEGORIES[item.category].label, item.area];
+      text.append(title, el("span", "suggestion__meta", metaParts.join(" · ")));
+      link.append(thumb, text);
+    });
+
+    // categories that contain matches
+    const byCategory = {};
+    matches.forEach((item) => (byCategory[item.category] = (byCategory[item.category] || 0) + 1));
+    const cats = Object.entries(byCategory).sort((a, b) => b[1] - a[1]).slice(0, 3);
+    if (cats.length > 1) {
+      label("In categories");
+      cats.forEach(([cat, n]) => {
+        const link = option(`search.html?q=${encodeURIComponent(query)}&category=${cat}`, "suggestion suggestion--category");
+        link.append(`“${query}” in `, el("strong", "", CATEGORIES[cat].label), el("span", "suggestion__count", String(n)));
+      });
+    }
+
+    const all = option("search.html?q=" + encodeURIComponent(query), "suggestion suggestion--all");
+    all.textContent = `See all ${matches.length} result${matches.length === 1 ? "" : "s"} for “${query}”`;
+
+    status.textContent = `${matches.length} matching listing${matches.length === 1 ? "" : "s"}`;
+    show();
+  }
 
   function sync() {
     form.classList.toggle("has-text", input.value.length > 0);
   }
   sync();
 
-  input.addEventListener("input", sync);
+  input.addEventListener("input", () => {
+    sync();
+    renderSuggestions();
+    if (onSearchPage) document.dispatchEvent(new CustomEvent("search:input", { detail: input.value }));
+  });
   input.addEventListener("focus", () => {
-    list.hidden = false;
+    if (input.value.trim()) renderSuggestions();
   });
   clear.addEventListener("click", () => {
     input.value = "";
     sync();
+    renderSuggestions();
+    if (onSearchPage) document.dispatchEvent(new CustomEvent("search:input", { detail: "" }));
     input.focus();
   });
   // close when focus or clicks leave the form
   form.addEventListener("focusout", (event) => {
-    if (!form.contains(event.relatedTarget)) list.hidden = true;
+    if (!form.contains(event.relatedTarget)) hide();
   });
   input.addEventListener("keydown", (event) => {
-    if (event.key === "Escape") {
-      list.hidden = true;
+    if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+      if (list.hidden) renderSuggestions();
+      if (list.hidden) return;
+      event.preventDefault();
+      const step = event.key === "ArrowDown" ? 1 : -1;
+      setActive(activeIndex === -1 && step === -1 ? -1 + options().length : activeIndex + step);
+    } else if (event.key === "Escape") {
+      hide();
+    } else if (event.key === "Enter" && activeIndex >= 0) {
+      event.preventDefault();
+      location.href = options()[activeIndex].href;
     }
   });
   form.addEventListener("submit", (event) => {
     if (!input.value.trim()) {
       event.preventDefault();
       input.focus();
+      return;
+    }
+    // results already update live on the search page — just close the list
+    if (onSearchPage) {
+      event.preventDefault();
+      hide();
+      input.blur();
     }
   });
 }
@@ -606,7 +820,12 @@ function listingCard(item, index = 0) {
   if (item.image) {
     const photo = img(item.image, "listing-card__photo");
     photo.alt = item.title;
-    thumb.classList.add("listing-card__thumb--photo");
+    photo.loading = "lazy";
+    thumb.classList.add("listing-card__thumb--photo", "is-loading"); // shimmer until the photo arrives
+    const done = () => thumb.classList.remove("is-loading");
+    photo.addEventListener("load", done, { once: true });
+    photo.addEventListener("error", done, { once: true });
+    if (photo.complete) done();
     thumb.append(photo);
   } else {
     thumb.append(img(CATEGORIES[item.category].icon, "icon"));
@@ -622,23 +841,35 @@ function listingCard(item, index = 0) {
   return li;
 }
 
+function skeletonCards(n) {
+  return Array.from({ length: n }, () => {
+    const li = el("li", "skeleton-card");
+    li.setAttribute("aria-hidden", "true");
+    li.append(el("div", "skeleton skeleton--thumb"), el("div", "skeleton skeleton--line skeleton--short"), el("div", "skeleton skeleton--line"), el("div", "skeleton skeleton--line skeleton--mid"));
+    return li;
+  });
+}
+
 /* ---------- PAGE: SEARCH RESULTS ---------- */
 function initSearchPage() {
-  const query = (params.get("q") || "").trim();
   const startCategory = params.get("category");
   const heading = document.getElementById("results-heading");
   const grid = document.getElementById("results-grid");
   const count = document.getElementById("results-count");
   const loading = document.getElementById("loading");
+  const loadingGrid = document.getElementById("loading-grid");
+  const loadingQuery = document.getElementById("loading-query");
   const results = document.getElementById("results-page");
   const sortButtons = document.querySelectorAll("[data-sort]");
 
   const state = {
+    query: (params.get("q") || "").trim(),
     category: CATEGORIES[startCategory] ? startCategory : null,
     distance: null,
     price: null,
     sort: null,
   };
+  let data = null; // listings, once "fetched"
 
   const PRICE_RANGES = {
     under50: (p) => p !== null && p < 50,
@@ -646,24 +877,22 @@ function initSearchPage() {
     over200: (p) => p !== null && p > 200,
   };
 
-  if (query) {
-    heading.textContent = `Search Results for: ${query}`;
-    document.title = `${query} — craigslist`;
-    document.getElementById("loading-query").textContent = query;
-  } else if (state.category) {
-    heading.textContent = CATEGORIES[state.category].label;
-    document.title = `${CATEGORIES[state.category].label} — craigslist`;
-    document.getElementById("loading-query").textContent = CATEGORIES[state.category].label;
-  } else {
-    heading.textContent = "All listings";
+  function updateHeading() {
+    const catLabel = state.category ? CATEGORIES[state.category].label : null;
+    if (state.query) {
+      heading.textContent = `Search Results for: ${state.query}`;
+      document.title = `${state.query} — craigslist`;
+    } else if (catLabel) {
+      heading.textContent = catLabel;
+      document.title = `${catLabel} — craigslist`;
+    } else {
+      heading.textContent = "All listings";
+      document.title = "Search results — craigslist";
+    }
   }
 
   function matches(item) {
-    if (query) {
-      const words = query.toLowerCase().split(/\s+/);
-      const haystack = `${item.title} ${item.keywords}`.toLowerCase();
-      if (!words.every((word) => haystack.includes(word))) return false;
-    }
+    if (!matchesQuery(item, state.query)) return false;
     if (state.category && item.category !== state.category) return false;
     if (state.distance && item.miles > Number(state.distance)) return false;
     if (state.price && !PRICE_RANGES[state.price](item.price)) return false;
@@ -671,7 +900,9 @@ function initSearchPage() {
   }
 
   function render() {
-    let items = LISTINGS.filter(matches);
+    if (!data) return;
+    let items = data.filter(matches);
+    if (state.query && !state.sort) items = rankListings(items, state.query);
     // posts without a price always go last
     if (state.sort === "asc") items = [...items].sort((a, b) => (a.price ?? Infinity) - (b.price ?? Infinity));
     if (state.sort === "desc") items = [...items].sort((a, b) => (b.price ?? -Infinity) - (a.price ?? -Infinity));
@@ -682,9 +913,10 @@ function initSearchPage() {
     if (items.length === 0) {
       const empty = el("li", "empty-state");
       empty.style.gridColumn = "1 / -1";
-      empty.append(el("strong", "", "No listings found"), document.createTextNode("Try a different search or clear a filter."));
+      const what = state.query ? `No listings match “${state.query}”` : "No listings found";
+      empty.append(el("strong", "", what), document.createTextNode("Try a different search or clear a filter."));
       // searched + filtered to a category: offer that whole category without the search
-      if (query && state.category) {
+      if (state.query && state.category) {
         const label = CATEGORIES[state.category].label;
         const link = el("a", "btn btn--outline empty-state__action", `See all ${label}`);
         link.href = "search.html?category=" + state.category;
@@ -693,6 +925,18 @@ function initSearchPage() {
       grid.append(empty);
     }
   }
+
+  // live search from the subnav field — results update on every keystroke,
+  // and clearing the field resets back to the full view
+  document.addEventListener("search:input", (event) => {
+    state.query = event.detail.trim();
+    const url = new URL(location.href);
+    if (state.query) url.searchParams.set("q", state.query);
+    else url.searchParams.delete("q");
+    history.replaceState(null, "", url);
+    updateHeading();
+    render();
+  });
 
   // filter chips: one choice per group, click again to clear.
   // The same chip can appear twice (mobile row + desktop sidebar), so sync by value.
@@ -706,12 +950,13 @@ function initSearchPage() {
       const group = chip.dataset.filter;
       state[group] = state[group] === chip.dataset.value ? null : chip.dataset.value;
       syncChips();
+      updateHeading();
       render();
     });
   });
   syncChips();
 
-  // filter group headers expand / collapse
+  // filter group headers expand / collapse (animated via CSS grid rows)
   document.querySelectorAll(".filter-group__header").forEach((header) => {
     const panel = document.getElementById(header.getAttribute("aria-controls"));
     header.addEventListener("click", () => {
@@ -734,12 +979,41 @@ function initSearchPage() {
     });
   });
 
-  // brief loading state, like the "Mobile - Loading" frame
-  setTimeout(() => {
-    loading.hidden = true;
-    results.hidden = false;
-    render();
-  }, 700);
+  // loading state: progress bar + skeleton cards while listings "fetch"
+  function load() {
+    loadingQuery.textContent = state.query || (state.category ? CATEGORIES[state.category].label : "everything");
+    loading.classList.remove("has-error");
+    loading.querySelector(".loading__error")?.remove();
+    loadingGrid.replaceChildren(...skeletonCards(8));
+    loading.hidden = false;
+    results.hidden = true;
+    document.getElementById("main").setAttribute("aria-busy", "true");
+
+    fakeRequest(700, LISTINGS)
+      .then((listings) => {
+        data = listings;
+        loading.hidden = true;
+        results.hidden = false;
+        render();
+      })
+      .catch(() => {
+        // failed fetch: stop the progress bar, say what happened, offer a retry
+        loading.classList.add("has-error");
+        loadingGrid.replaceChildren();
+        const box = el("div", "loading__error");
+        box.setAttribute("role", "alert");
+        box.append(el("strong", "", "Couldn’t load listings"), el("p", "", "Check your internet connection and try again."));
+        const retry = el("button", "btn btn--primary", "Try again");
+        retry.type = "button";
+        retry.addEventListener("click", load);
+        box.append(retry);
+        loading.append(box);
+      })
+      .finally(() => document.getElementById("main").setAttribute("aria-busy", "false"));
+  }
+
+  updateHeading();
+  load();
 }
 
 /* ---------- PAGE: LISTING DETAILS ---------- */
@@ -749,47 +1023,81 @@ function initListingPage() {
     location.replace("404.html");
     return;
   }
-  const category = CATEGORIES[item.category];
-  const heading = item.heading || item.title;
+  const layout = document.querySelector(".listing__layout");
+  const contactLinks = document.querySelectorAll("[data-contact-link]");
 
-  document.title = `${heading} — craigslist`;
-  document.getElementById("listing-title").textContent = heading;
-  document.getElementById("listing-price").textContent = formatPrice(item);
-  document.getElementById("listing-price-row").hidden = item.price === null;
+  // skeleton shimmer while the listing "loads"; contact buttons wait too
+  layout.classList.add("is-loading");
+  layout.setAttribute("aria-busy", "true");
+  contactLinks.forEach((link) => link.setAttribute("aria-disabled", "true"));
 
-  const meta = [category.label];
-  if (item.condition) meta.push(`Condition: ${item.condition}`);
-  meta.push(`Posted ${item.postedLong}`);
-  document.getElementById("listing-meta").textContent = meta.join(" · ");
+  fakeRequest(450, item)
+    .then(fillListing)
+    .catch(() => {
+      layout.classList.remove("is-loading");
+      layout.setAttribute("aria-busy", "false");
+      document.getElementById("listing-title").textContent = "Couldn’t load this listing";
+      const desc = document.getElementById("listing-desc");
+      const retry = el("button", "btn btn--primary", "Try again");
+      retry.type = "button";
+      retry.addEventListener("click", () => location.reload());
+      desc.replaceChildren(el("p", "", "Check your internet connection and try again."), retry);
+      desc.setAttribute("role", "alert");
+    });
 
-  document.getElementById("listing-tag").textContent = category.label;
-  document.getElementById("listing-condition").textContent = item.condition || "";
-  document.getElementById("listing-condition-row").hidden = !item.condition;
-  document.getElementById("listing-posted").textContent = item.postedLong;
-  const listingImage = document.getElementById("listing-icon");
-  if (item.image) {
-    listingImage.src = item.image;
-    listingImage.alt = heading;
-    listingImage.classList.remove("icon");
-    listingImage.classList.add("listing__photo");
-    if (item.imageInset) listingImage.classList.add("listing__photo--inset");
-    listingImage.parentElement.classList.add("listing__thumb--photo");
-  } else {
-    listingImage.src = category.icon.replace("icon-for-sale.svg", "icon-for-sale-lg.svg");
+  function fillListing() {
+    const category = CATEGORIES[item.category];
+    const heading = item.heading || item.title;
+
+    document.title = `${heading} — craigslist`;
+    document.getElementById("listing-title").textContent = heading;
+    document.getElementById("listing-price").textContent = formatPrice(item);
+    document.getElementById("listing-price-row").hidden = item.price === null;
+
+    const meta = [category.label];
+    if (item.condition) meta.push(`Condition: ${item.condition}`);
+    meta.push(`Posted ${item.postedLong}`);
+    document.getElementById("listing-meta").textContent = meta.join(" · ");
+
+    document.getElementById("listing-tag").textContent = category.label;
+    document.getElementById("listing-condition").textContent = item.condition || "";
+    document.getElementById("listing-condition-row").hidden = !item.condition;
+    document.getElementById("listing-posted").textContent = item.postedLong;
+    const listingImage = document.getElementById("listing-icon");
+    const thumb = listingImage.parentElement;
+    if (item.image) {
+      thumb.classList.add("listing__thumb--photo", "is-loading");
+      const done = () => thumb.classList.remove("is-loading");
+      listingImage.addEventListener("load", done, { once: true });
+      listingImage.addEventListener("error", done, { once: true });
+      listingImage.src = item.image;
+      listingImage.alt = heading;
+      listingImage.classList.remove("icon");
+      listingImage.classList.add("listing__photo");
+      if (item.imageInset) listingImage.classList.add("listing__photo--inset");
+      if (listingImage.complete) done();
+    } else {
+      listingImage.src = category.icon.replace("icon-for-sale.svg", "icon-for-sale-lg.svg");
+    }
+    document.getElementById("listing-desc").replaceChildren(...item.description.map((text) => el("p", "", text)));
+
+    const address = document.getElementById("listing-address");
+    address.replaceChildren();
+    item.address.forEach((line, i) => {
+      if (i > 0) address.append(el("br"));
+      address.append(line);
+    });
+
+    contactLinks.forEach((link) => {
+      link.href = "contact.html?id=" + item.id;
+      link.removeAttribute("aria-disabled");
+    });
+
+    layout.classList.remove("is-loading");
+    layout.classList.add("is-loaded"); // fades the content in
+    layout.setAttribute("aria-busy", "false");
+    renderMap(item);
   }
-  document.getElementById("listing-desc").replaceChildren(...item.description.map((text) => el("p", "", text)));
-
-  const address = document.getElementById("listing-address");
-  address.replaceChildren();
-  item.address.forEach((line, i) => {
-    if (i > 0) address.append(el("br"));
-    address.append(line);
-  });
-  renderMap(item);
-
-  document.querySelectorAll("[data-contact-link]").forEach((link) => {
-    link.href = "contact.html?id=" + item.id;
-  });
 }
 
 /* ---------- LISTING MAP (Leaflet + OpenStreetMap) ---------- */
@@ -798,19 +1106,38 @@ function renderMap(item) {
   document.getElementById("listing-directions").href =
     `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`;
 
-  // keep the purple placeholder if the map library couldn't load (offline, blocked)
-  if (!window.L) return;
-
   const slot = document.getElementById("listing-map");
+
+  // map library couldn't load (offline, blocked): say so instead of a blank box
+  if (!window.L) {
+    slot.append(el("p", "map-status", "Map unavailable — use “Open in Google Maps”."));
+    return;
+  }
+
   const box = el("div", "location-card__leaflet");
-  slot.replaceChildren(box);
+  const overlay = el("div", "map-loading");
+  overlay.setAttribute("role", "status");
+  overlay.append(spinner(), el("span", "", "Loading map…"));
+  slot.replaceChildren(box, overlay);
   slot.classList.add("has-map");
 
   const map = L.map(box, { scrollWheelZoom: false }).setView([lat, lng], 15);
-  L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+  const tiles = L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
     maxZoom: 19,
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
   }).addTo(map);
+
+  // hide the spinner once tiles arrive; if they never do, explain instead of spinning forever
+  const timeout = setTimeout(() => {
+    overlay.replaceChildren(el("span", "", "Map couldn’t load — use “Open in Google Maps”."));
+    overlay.classList.add("is-error");
+  }, 8000);
+  tiles.once("load", () => {
+    clearTimeout(timeout);
+    overlay.classList.add("is-done");
+    overlay.addEventListener("transitionend", () => overlay.remove(), { once: true });
+    setTimeout(() => overlay.remove(), 400);
+  });
 
   // circle = approximate area, like real Craigslist posts
   L.circle([lat, lng], { radius: 250, color: "#5b2a86", weight: 2, fillOpacity: 0.15 }).addTo(map);
@@ -828,6 +1155,9 @@ function initContactPage() {
   const field = document.getElementById("message");
   const counter = document.getElementById("message-count");
   const error = document.getElementById("message-error");
+  const sendError = document.getElementById("send-error");
+  const submit = form.querySelector("button[type='submit']");
+  const submitLabel = submit.textContent;
   const dialog = document.getElementById("sent-dialog");
   const max = Number(field.getAttribute("maxlength"));
 
@@ -844,6 +1174,14 @@ function initContactPage() {
   }
   updateCount();
 
+  function setSending(sending) {
+    submit.disabled = sending;
+    field.readOnly = sending;
+    form.setAttribute("aria-busy", String(sending));
+    submit.classList.toggle("is-busy", sending);
+    submit.replaceChildren(...(sending ? [spinner(), "Sending…"] : [submitLabel]));
+  }
+
   field.addEventListener("input", () => {
     updateCount();
     if (field.value.trim()) {
@@ -855,6 +1193,8 @@ function initContactPage() {
 
   form.addEventListener("submit", (event) => {
     event.preventDefault();
+    if (submit.disabled) return; // no double sends
+    sendError.hidden = true;
     if (!field.value.trim()) {
       form.classList.add("has-error");
       field.setAttribute("aria-invalid", "true");
@@ -862,9 +1202,21 @@ function initContactPage() {
       field.focus();
       return;
     }
-    field.value = "";
-    updateCount();
-    dialog.showModal();
+
+    setSending(true);
+    fakeRequest(1200)
+      .then(() => {
+        setSending(false);
+        field.value = "";
+        updateCount();
+        dialog.showModal();
+      })
+      .catch(() => {
+        // keep their message so they can retry
+        setSending(false);
+        sendError.hidden = false;
+        submit.textContent = "Try again";
+      });
   });
 
   dialog.querySelector("[data-done]").addEventListener("click", () => {

@@ -15,7 +15,7 @@
   <meta property="og:description" content="Buy, sell and connect around Charlotte. A responsive Craigslist redesign by ITIS 4390 Group 6." />
   <meta property="og:image" content="https://kailynalisha.github.io/craigslist-redesign/assets/og-image.png" />
   <meta name="twitter:card" content="summary_large_image" />
-  <link rel="stylesheet" href="styles.css?v=202610260008" />
+  <link rel="stylesheet" href="styles.css?v=202611020001" />
   <script>
     try { document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"; } catch (e) {}
   </script>
@@ -62,6 +62,8 @@
       <strong>Searching…</strong>
       <p>Finding listings for <span id="loading-query">everything</span></p>
     </div>
+    <!-- skeleton cards stand in for results while they load -->
+    <ul class="listing-grid skeleton-grid" id="loading-grid" aria-hidden="true"></ul>
   </div>
 
   <main class="results-page" id="results-page" hidden>
@@ -123,6 +125,6 @@
   </main>
   </div>
 
-  <script src="app.js?v=202610260004"></script>
+  <script src="app.js?v=202611020001"></script>
 </body>
 </html>
