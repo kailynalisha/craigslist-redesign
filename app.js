@@ -521,6 +521,330 @@ function img(src, className = "") {
   return node;
 }
 
+// Account Login/Sign up
+let demoAccountEmail;
+let demoAccountProfile;
+let demoAccountProfileLoaded = false;
+let afterAccountSignIn = null;
+
+function getDemoAccountEmail() {
+  if (demoAccountEmail !== undefined) return demoAccountEmail;
+  try {
+    demoAccountEmail = sessionStorage.getItem("demo-account-email") || "";
+  } catch {
+    demoAccountEmail = "";
+  }
+  return demoAccountEmail;
+}
+
+function getDemoAccountProfile() {
+  if (demoAccountProfileLoaded) return demoAccountProfile;
+  demoAccountProfileLoaded = true;
+  try {
+    const savedProfile = sessionStorage.getItem("demo-account-profile");
+    const profile = savedProfile ? JSON.parse(savedProfile) : null;
+    demoAccountProfile =
+      profile &&
+      typeof profile.firstName === "string" &&
+      typeof profile.lastName === "string" &&
+      typeof profile.email === "string"
+        ? profile
+        : null;
+  } catch {
+    demoAccountProfile = null;
+  }
+  return demoAccountProfile;
+}
+
+function updateAccountLabels() {
+  const profile = getDemoAccountProfile();
+  const email = getDemoAccountEmail();
+  const label = email
+    ? profile
+      ? `${profile.firstName} ${profile.lastName}`
+      : "My Account"
+    : "Log in / Sign up";
+  document.querySelectorAll("[data-account-open]").forEach((button) => {
+    button.textContent = label;
+    button.setAttribute("aria-expanded", "false");
+    const popover = button.parentElement.querySelector("[data-account-popover]");
+    if (popover) {
+      popover.hidden = true;
+      popover.querySelector("[data-account-auth]").hidden = Boolean(email);
+      popover.querySelector("[data-account-signout]").hidden = !email;
+    }
+  });
+}
+
+function openAccountDialog(onSignIn) {
+  const dialog = document.getElementById("account-dialog");
+  if (onSignIn) afterAccountSignIn = onSignIn;
+  if (dialog.open) return;
+
+  const form = dialog.querySelector(".account-dialog__form");
+  setAccountMode(dialog, "login");
+  form.reset();
+  dialog.showModal();
+  form.elements.email.focus();
+}
+
+function setAccountMode(dialog, mode) {
+  const isSignup = mode === "signup";
+  dialog.dataset.mode = mode;
+  dialog.querySelectorAll("[data-account-mode]").forEach((button) => {
+    button.setAttribute("aria-pressed", String(button.dataset.accountMode === mode));
+  });
+  ["firstName", "lastName", "confirmPassword"].forEach((name) => {
+    const input = dialog.querySelector(`[name="${name}"]`);
+    input.closest(".account-dialog__field").hidden = !isSignup;
+    input.required = isSignup;
+  });
+  dialog.querySelectorAll(".account-dialog__error").forEach((error) => {
+    error.hidden = true;
+  });
+  dialog.querySelectorAll("input[aria-invalid]").forEach((input) => {
+    input.removeAttribute("aria-invalid");
+    input.removeAttribute("aria-describedby");
+  });
+  dialog.querySelector("#account-password").autocomplete = isSignup ? "new-password" : "current-password";
+  dialog.querySelector(".account-dialog__submit").textContent = isSignup ? "Sign up" : "Log in";
+  dialog.querySelector(".account-dialog__status").hidden = true;
+}
+
+function toggleAccountPopover(button) {
+  const popover = button.parentElement.querySelector("[data-account-popover]");
+  if (!popover) return;
+
+  const isOpening = popover.hidden;
+  document.querySelectorAll("[data-account-popover]").forEach((otherPopover) => {
+    otherPopover.hidden = true;
+    otherPopover.parentElement.querySelector("[data-account-open]").setAttribute("aria-expanded", "false");
+  });
+  popover.hidden = !isOpening;
+  button.setAttribute("aria-expanded", String(isOpening));
+}
+
+function setupAccountUI() {
+  const navbar = document.querySelector(".navbar");
+  const headerMenu = el("div", "account-menu account-menu--header");
+  headerMenu.innerHTML = `
+    <button class="btn account-header" type="button" data-account-open aria-haspopup="true" aria-expanded="false">Log in / Sign up</button>
+    <div class="account-popover" data-account-popover role="menu" hidden>
+      <button class="account-popover__signout" type="button" role="menuitem" data-account-auth>Log in / Sign up</button>
+      <button class="account-popover__signout" type="button" role="menuitem" data-account-signout>Sign out</button>
+    </div>`;
+  navbar.append(headerMenu);
+
+  const dialog = el("dialog", "dialog account-dialog");
+  dialog.id = "account-dialog";
+  dialog.setAttribute("aria-labelledby", "account-title");
+  dialog.innerHTML = `
+    <div class="account-dialog__inner">
+      <div class="account-dialog__heading">
+        <h2 id="account-title">Log in or sign up</h2>
+        <button class="account-dialog__dismiss" type="button" aria-label="Close sign-in dialog" data-close-account>×</button>
+      </div>
+      <p class="account-dialog__notice">Prototype only: this demo does not create real accounts. Do not use a real password; passwords are not saved.</p>
+      <div class="account-dialog__tabs" role="group" aria-label="Account action">
+        <button class="btn btn--outline account-dialog__tab" type="button" data-account-mode="login" aria-pressed="true">Log in</button>
+        <button class="btn btn--outline account-dialog__tab" type="button" data-account-mode="signup" aria-pressed="false">Sign up</button>
+      </div>
+      <form class="account-dialog__form" novalidate>
+        <div class="account-dialog__field" hidden>
+          <label for="account-first-name">First name</label>
+          <input id="account-first-name" name="firstName" type="text" autocomplete="given-name" required />
+          <p class="account-dialog__error" id="account-first-name-error" role="alert" hidden>Please enter your first name.</p>
+        </div>
+        <div class="account-dialog__field" hidden>
+          <label for="account-last-name">Last name</label>
+          <input id="account-last-name" name="lastName" type="text" autocomplete="family-name" required />
+          <p class="account-dialog__error" id="account-last-name-error" role="alert" hidden>Please enter your last name.</p>
+        </div>
+        <div class="account-dialog__field">
+          <label for="account-email">Email</label>
+          <input id="account-email" name="email" type="email" autocomplete="email" required />
+          <p class="account-dialog__error" id="account-email-error" role="alert" hidden>Please enter an email address.</p>
+        </div>
+        <div class="account-dialog__field">
+          <label for="account-password">Password</label>
+          <input id="account-password" name="password" type="password" autocomplete="current-password" required />
+          <p class="account-dialog__error" id="account-password-error" role="alert" hidden>Please enter a password.</p>
+        </div>
+        <div class="account-dialog__field" hidden>
+          <label for="account-confirm-password">Confirm password</label>
+          <input id="account-confirm-password" name="confirmPassword" type="password" autocomplete="new-password" required />
+          <p class="account-dialog__error" id="account-confirm-password-error" role="alert" hidden>Please re-enter the password.</p>
+        </div>
+        <p class="account-dialog__status" role="status" hidden></p>
+        <button class="btn btn--container account-dialog__submit" type="submit">Log in</button>
+      </form>
+      <button class="btn btn--outline account-dialog__cancel" type="button" data-close-account>Cancel</button>
+    </div>`;
+  document.body.append(dialog);
+  const form = dialog.querySelector(".account-dialog__form");
+
+  function setRequiredFieldError(input, showError) {
+    const error = form.querySelector(`#${input.id}-error`);
+    const isInvalid = showError && input.required && !input.value.trim();
+    error.hidden = !isInvalid;
+    if (isInvalid) {
+      input.setAttribute("aria-invalid", "true");
+      input.setAttribute("aria-describedby", error.id);
+    } else {
+      input.removeAttribute("aria-invalid");
+      input.removeAttribute("aria-describedby");
+    }
+  }
+
+  function canMoveToField(targetInput) {
+    const requiredInputs = Array.from(form.querySelectorAll("input[required]"));
+    let currentIndex = requiredInputs.indexOf(document.activeElement);
+    const targetIndex = requiredInputs.indexOf(targetInput);
+    if (currentIndex === -1 && form.contains(document.activeElement)) {
+      currentIndex = requiredInputs.length;
+    }
+    if (targetIndex <= currentIndex) return true;
+
+    const firstEmptyInput = requiredInputs
+      .slice(Math.max(currentIndex, 0), targetIndex)
+      .find((input) => !input.value.trim());
+    if (!firstEmptyInput) return true;
+
+    setRequiredFieldError(firstEmptyInput, true);
+    firstEmptyInput.focus();
+    return false;
+  }
+
+  form.querySelectorAll("input").forEach((input) => {
+    input.addEventListener("input", () => {
+      if (input.value.trim()) setRequiredFieldError(input, false);
+    });
+  });
+  form.addEventListener("focusout", (event) => {
+    const input = event.target;
+    if (dialog.dataset.mode === "signup" && input.matches("input[required]")) {
+      setRequiredFieldError(input, true);
+    }
+  });
+  form.addEventListener("keydown", (event) => {
+    if (dialog.dataset.mode !== "signup" || event.key !== "Tab" || event.shiftKey) return;
+    const requiredInputs = Array.from(form.querySelectorAll("input[required]"));
+    const currentIndex = requiredInputs.indexOf(event.target);
+    const nextInput = requiredInputs[currentIndex + 1];
+    if (nextInput && !canMoveToField(nextInput)) event.preventDefault();
+  });
+  form.addEventListener("pointerdown", (event) => {
+    if (dialog.dataset.mode !== "signup") return;
+    const target = event.target.closest("input, label");
+    const targetInput = target && (target.matches("input") ? target : target.control);
+    if (targetInput && !canMoveToField(targetInput)) event.preventDefault();
+  });
+
+  dialog.querySelectorAll("[data-close-account]").forEach((button) => {
+    button.addEventListener("click", () => {
+      afterAccountSignIn = null;
+      dialog.close();
+    });
+  });
+
+  function signOut() {
+    demoAccountEmail = "";
+    try {
+      sessionStorage.removeItem("demo-account-email");
+    } catch {
+    }
+    updateAccountLabels();
+  }
+
+  document.querySelectorAll("[data-account-auth]").forEach((button) => {
+    button.addEventListener("click", () => {
+      document.querySelectorAll("[data-account-popover]").forEach((popover) => {
+        popover.hidden = true;
+        popover.parentElement.querySelector("[data-account-open]").setAttribute("aria-expanded", "false");
+      });
+      openAccountDialog();
+    });
+  });
+
+  document.querySelectorAll(".account-menu--header [data-account-open]").forEach((button) => {
+    button.addEventListener("click", () => {
+      if (!getDemoAccountEmail()) {
+        openAccountDialog();
+        return;
+      }
+      toggleAccountPopover(button);
+    });
+  });
+  document.addEventListener("click", (event) => {
+    if (event.target.closest("[data-account-signout]")) signOut();
+  });
+  dialog.querySelectorAll("[data-account-mode]").forEach((button) => {
+    button.addEventListener("click", () => setAccountMode(dialog, button.dataset.accountMode));
+  });
+  dialog.addEventListener("cancel", () => {
+    afterAccountSignIn = null;
+  });
+  form.addEventListener("submit", (event) => {
+    event.preventDefault();
+    const form = event.currentTarget;
+    const mode = dialog.dataset.mode;
+    if (mode === "signup") {
+      const emptyRequiredInput = Array.from(form.querySelectorAll("input[required]"))
+        .find((input) => !input.value.trim());
+      if (emptyRequiredInput) {
+        setRequiredFieldError(emptyRequiredInput, true);
+        emptyRequiredInput.focus();
+        return;
+      }
+    }
+    if (!form.reportValidity()) return;
+
+    const email = form.elements.email.value.trim();
+    const status = dialog.querySelector(".account-dialog__form .account-dialog__status");
+    let profile = getDemoAccountProfile();
+    if (mode === "signup") {
+      if (form.elements.password.value !== form.elements.confirmPassword.value) {
+        status.textContent = "Passwords do not match";
+        status.hidden = false;
+        form.elements.confirmPassword.setAttribute("aria-invalid", "true");
+        form.elements.confirmPassword.focus();
+        return;
+      }
+      form.elements.confirmPassword.removeAttribute("aria-invalid");
+      profile = {
+        firstName: form.elements.firstName.value.trim(),
+        lastName: form.elements.lastName.value.trim(),
+        email,
+      };
+    } else if (!profile || profile.email.toLowerCase() !== email.toLowerCase()) {
+      status.textContent = "No demo account with that email exists in this browser session. Please sign up first.";
+      status.hidden = false;
+      return;
+    }
+
+    demoAccountProfile = profile;
+    demoAccountProfileLoaded = true;
+    demoAccountEmail = profile.email;
+    try {
+      if (mode === "signup") {
+        sessionStorage.setItem("demo-account-profile", JSON.stringify(profile));
+      }
+      sessionStorage.setItem("demo-account-email", profile.email);
+    } catch {
+      status.textContent = "Signed in for this page only. The profile could not be saved in browser session storage.";
+      status.hidden = false;
+    }
+
+    form.reset();
+    updateAccountLabels();
+    dialog.close();
+    const continueAfterSignIn = afterAccountSignIn;
+    afterAccountSignIn = null;
+    if (continueAfterSignIn) continueAfterSignIn();
+  });
+  updateAccountLabels();
+}
+
 /* ---------- THEME ---------- */
 function getTheme() {
   try {
@@ -558,6 +882,13 @@ function buildDrawer() {
     <button class="drawer__scrim" type="button" aria-label="Close menu" data-close-menu></button>
     <nav class="drawer__panel" aria-label="Main menu" role="dialog" aria-modal="true">
       <p class="drawer__title">Menu</p>
+      <div class="account-menu account-menu--drawer">
+        <button class="drawer__link drawer__account" type="button" data-account-open aria-haspopup="true" aria-expanded="false">Log in / Sign up</button>
+        <div class="account-popover" data-account-popover role="menu" hidden>
+          <button class="account-popover__signout" type="button" role="menuitem" data-account-auth>Log in / Sign up</button>
+          <button class="account-popover__signout" type="button" role="menuitem" data-account-signout>Sign out</button>
+        </div>
+      </div>
       <a class="drawer__link" href="index.html" ${page === "home" ? 'aria-current="page"' : ""}>Home</a>
       <a class="drawer__link" href="search.html?category=for-sale">For Sale</a>
       <a class="drawer__link" href="contact.html" ${page === "contact" ? 'aria-current="page"' : ""}>Contact Seller</a>
@@ -594,6 +925,15 @@ function buildDrawer() {
     button.addEventListener("click", open);
   });
   drawer.querySelector("[data-close-menu]").addEventListener("click", close);
+  const accountButton = drawer.querySelector("[data-account-open]");
+  accountButton.addEventListener("click", () => {
+    if (getDemoAccountEmail()) {
+      toggleAccountPopover(accountButton);
+    } else {
+      close();
+      openAccountDialog();
+    }
+  });
   document.addEventListener("keydown", (event) => {
     if (event.key === "Escape" && drawer.classList.contains("is-open")) close();
   });
@@ -1203,6 +1543,11 @@ function initContactPage() {
       return;
     }
 
+    if (!getDemoAccountEmail()) {
+      openAccountDialog(() => form.requestSubmit());
+      return;
+    }
+
     setSending(true);
     fakeRequest(1200)
       .then(() => {
@@ -1237,7 +1582,9 @@ function initContactPage() {
 document.querySelectorAll("[data-theme-slot]").forEach((slot) => {
   slot.innerHTML = toggleMarkup();
 });
+setupAccountUI();
 buildDrawer();
+updateAccountLabels();
 setTheme(getTheme());
 document.querySelectorAll("[data-theme-toggle]").forEach((toggle) => {
   toggle.addEventListener("click", () => {

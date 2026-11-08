@@ -26,6 +26,10 @@ No dependencies, installs or build step are needed — it's plain HTML, CSS and 
 
 `styles.css` holds the layout, light/dark colors and animations; `app.js` holds the listing data and all interactions. Icons and photos are in `assets/`.
 
+## Assignment 12 - Form Validation & User Feedback
+## Account prototype
+Use **Log in / Sign up** in the desktop header or mobile menu to open the account dialog. Sign-up collects a first name, last name, email, password, and matching password confirmation. The profile is kept only in the current browser tab's session storage; passwords are compared for a match but never saved. Once signed in, the user's name appears in the account control; clicking it reveals options to log in/sign up or sign out. Signing out keeps the demo profile for the current tab so it can be used to log in again. Sending a seller message also prompts users to log in or sign up first. This is a front-end demonstration only: it does not create real accounts or authenticate users.
+
 ## Assignment 11 – Interactive search & micro-interactions
 
 ### 1. Client-side search with live suggestions
