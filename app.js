@@ -584,6 +584,7 @@ function openAccountDialog(onSignIn) {
   const form = dialog.querySelector(".account-dialog__form");
   setAccountMode(dialog, "login");
   form.reset();
+  form.resetValidation?.();
   dialog.showModal();
   form.elements.email.focus();
 }
@@ -597,15 +598,8 @@ function setAccountMode(dialog, mode) {
   ["firstName", "lastName", "confirmPassword"].forEach((name) => {
     const input = dialog.querySelector(`[name="${name}"]`);
     input.closest(".account-dialog__field").hidden = !isSignup;
-    input.required = isSignup;
   });
-  dialog.querySelectorAll(".account-dialog__error").forEach((error) => {
-    error.hidden = true;
-  });
-  dialog.querySelectorAll("input[aria-invalid]").forEach((input) => {
-    input.removeAttribute("aria-invalid");
-    input.removeAttribute("aria-describedby");
-  });
+  dialog.querySelector(".account-dialog__form").resetValidation?.();
   dialog.querySelector("#account-password").autocomplete = isSignup ? "new-password" : "current-password";
   dialog.querySelector(".account-dialog__submit").textContent = isSignup ? "Sign up" : "Log in";
   dialog.querySelector(".account-dialog__status").hidden = true;
@@ -650,30 +644,51 @@ function setupAccountUI() {
         <button class="btn btn--outline account-dialog__tab" type="button" data-account-mode="signup" aria-pressed="false">Sign up</button>
       </div>
       <form class="account-dialog__form" novalidate>
+        <p class="account-dialog__required-note">All fields are required.</p>
         <div class="account-dialog__field" hidden>
           <label for="account-first-name">First name</label>
-          <input id="account-first-name" name="firstName" type="text" autocomplete="given-name" required />
-          <p class="account-dialog__error" id="account-first-name-error" role="alert" hidden>Please enter your first name.</p>
+          <div class="account-dialog__control">
+            <input id="account-first-name" name="firstName" type="text" autocomplete="given-name" aria-describedby="account-first-name-msg" />
+            <span class="account-dialog__icon" aria-hidden="true"></span>
+          </div>
+          <p class="account-dialog__msg" id="account-first-name-msg" aria-live="polite"></p>
         </div>
         <div class="account-dialog__field" hidden>
           <label for="account-last-name">Last name</label>
-          <input id="account-last-name" name="lastName" type="text" autocomplete="family-name" required />
-          <p class="account-dialog__error" id="account-last-name-error" role="alert" hidden>Please enter your last name.</p>
+          <div class="account-dialog__control">
+            <input id="account-last-name" name="lastName" type="text" autocomplete="family-name" aria-describedby="account-last-name-msg" />
+            <span class="account-dialog__icon" aria-hidden="true"></span>
+          </div>
+          <p class="account-dialog__msg" id="account-last-name-msg" aria-live="polite"></p>
         </div>
         <div class="account-dialog__field">
           <label for="account-email">Email</label>
-          <input id="account-email" name="email" type="email" autocomplete="email" required />
-          <p class="account-dialog__error" id="account-email-error" role="alert" hidden>Please enter an email address.</p>
+          <div class="account-dialog__control">
+            <input id="account-email" name="email" type="email" autocomplete="email" aria-describedby="account-email-msg" />
+            <span class="account-dialog__icon" aria-hidden="true"></span>
+          </div>
+          <p class="account-dialog__msg" id="account-email-msg" aria-live="polite"></p>
         </div>
         <div class="account-dialog__field">
           <label for="account-password">Password</label>
-          <input id="account-password" name="password" type="password" autocomplete="current-password" required />
-          <p class="account-dialog__error" id="account-password-error" role="alert" hidden>Please enter a password.</p>
+          <div class="account-dialog__control">
+            <input id="account-password" name="password" type="password" autocomplete="current-password" aria-describedby="account-password-msg" />
+            <span class="account-dialog__icon" aria-hidden="true"></span>
+          </div>
+          <ul class="account-dialog__rules" id="account-password-rules" hidden>
+            <li data-rule="length">At least 8 characters</li>
+            <li data-rule="letter">At least one letter</li>
+            <li data-rule="number">At least one number</li>
+          </ul>
+          <p class="account-dialog__msg" id="account-password-msg" aria-live="polite"></p>
         </div>
         <div class="account-dialog__field" hidden>
           <label for="account-confirm-password">Confirm password</label>
-          <input id="account-confirm-password" name="confirmPassword" type="password" autocomplete="new-password" required />
-          <p class="account-dialog__error" id="account-confirm-password-error" role="alert" hidden>Please re-enter the password.</p>
+          <div class="account-dialog__control">
+            <input id="account-confirm-password" name="confirmPassword" type="password" autocomplete="new-password" aria-describedby="account-confirm-password-msg" />
+            <span class="account-dialog__icon" aria-hidden="true"></span>
+          </div>
+          <p class="account-dialog__msg" id="account-confirm-password-msg" aria-live="polite"></p>
         </div>
         <p class="account-dialog__status" role="status" hidden></p>
         <button class="btn btn--container account-dialog__submit" type="submit">Log in</button>
@@ -683,62 +698,155 @@ function setupAccountUI() {
   document.body.append(dialog);
   const form = dialog.querySelector(".account-dialog__form");
 
-  function setRequiredFieldError(input, showError) {
-    const error = form.querySelector(`#${input.id}-error`);
-    const isInvalid = showError && input.required && !input.value.trim();
-    error.hidden = !isInvalid;
-    if (isInvalid) {
-      input.setAttribute("aria-invalid", "true");
-      input.setAttribute("aria-describedby", error.id);
-    } else {
-      input.removeAttribute("aria-invalid");
-      input.removeAttribute("aria-describedby");
-    }
+  // ---------- Real-time validation ----------
+  // Each rule returns "" when valid, or a message saying what's wrong AND how to fix it.
+  const namePattern = /^[\p{L}][\p{L}' .-]*$/u;
+  function checkName(value, label) {
+    const v = value.trim();
+    if (!v) return `Enter your ${label} so sellers know who they're talking to.`;
+    if (v.length < 2) return `${capitalize(label)} needs at least 2 letters.`;
+    if (v.length > 40) return `${capitalize(label)} must be 40 characters or fewer (you have ${v.length}).`;
+    if (!namePattern.test(v)) return `${capitalize(label)} can only use letters, spaces, hyphens (-) or apostrophes (').`;
+    return "";
+  }
+  function capitalize(text) {
+    return text.charAt(0).toUpperCase() + text.slice(1);
+  }
+  function checkEmail(value) {
+    const v = value.trim();
+    if (!v) return "Enter your email address, like name@example.com.";
+    if (/\s/.test(v)) return "Email addresses can't contain spaces. Remove any spaces.";
+    const at = v.split("@").length - 1;
+    if (at === 0) return "Your email is missing an \"@\". Use a format like name@example.com.";
+    if (at > 1) return "Your email has more than one \"@\". Use only one, like name@example.com.";
+    const [local, domain] = v.split("@");
+    if (!local) return "Add the part before the \"@\" (for example, name@example.com).";
+    if (!domain) return "Add the part after the \"@\", like example.com.";
+    if (!/^[^.]+(\.[^.]+)+$/.test(domain)) return `"${domain}" isn't a complete domain. It needs a dot and an ending, like example.com.`;
+    if (!/\.[a-z]{2,}$/i.test(domain)) return "The ending after the last dot needs at least 2 letters, like .com or .edu.";
+    return "";
+  }
+  function passwordRules(value) {
+    return {
+      length: value.length >= 8,
+      letter: /[a-z]/i.test(value),
+      number: /\d/.test(value),
+    };
+  }
+  function checkPassword(value) {
+    const isSignup = dialog.dataset.mode === "signup";
+    if (!value) return isSignup ? "Create a password using the rules below." : "Enter your password to log in.";
+    if (!isSignup) return "";
+    if (/\s/.test(value)) return "Passwords can't contain spaces. Remove any spaces.";
+    const rules = passwordRules(value);
+    if (!rules.length) return `Password must be at least 8 characters. Add ${8 - value.length} more.`;
+    if (!rules.letter) return "Add at least one letter to your password.";
+    if (!rules.number) return "Add at least one number (0–9) to your password.";
+    return "";
+  }
+  function checkConfirm(value) {
+    if (!value) return "Re-enter your password to confirm it.";
+    if (value !== form.elements.password.value) return "Passwords don't match. Re-type the same password you entered above.";
+    return "";
   }
 
-  function canMoveToField(targetInput) {
-    const requiredInputs = Array.from(form.querySelectorAll("input[required]"));
-    let currentIndex = requiredInputs.indexOf(document.activeElement);
-    const targetIndex = requiredInputs.indexOf(targetInput);
-    if (currentIndex === -1 && form.contains(document.activeElement)) {
-      currentIndex = requiredInputs.length;
-    }
-    if (targetIndex <= currentIndex) return true;
+  const successText = {
+    firstName: "Looks good!",
+    lastName: "Looks good!",
+    email: "Valid email address.",
+    password: "Strong enough. Nice!",
+    confirmPassword: "Passwords match.",
+  };
+  const checks = {
+    firstName: (v) => checkName(v, "first name"),
+    lastName: (v) => checkName(v, "last name"),
+    email: checkEmail,
+    password: checkPassword,
+    confirmPassword: checkConfirm,
+  };
 
-    const firstEmptyInput = requiredInputs
-      .slice(Math.max(currentIndex, 0), targetIndex)
-      .find((input) => !input.value.trim());
-    if (!firstEmptyInput) return true;
+  // Fields count as "touched" after the user leaves them once, or after a submit attempt.
+  // Before that, we only show positive feedback, so users aren't yelled at mid-typing.
+  const touched = new Set();
 
-    setRequiredFieldError(firstEmptyInput, true);
-    firstEmptyInput.focus();
-    return false;
+  function activeInputs() {
+    return Array.from(form.querySelectorAll("input")).filter(
+      (input) => !input.closest(".account-dialog__field").hidden
+    );
   }
 
-  form.querySelectorAll("input").forEach((input) => {
-    input.addEventListener("input", () => {
-      if (input.value.trim()) setRequiredFieldError(input, false);
+  function setFieldState(input, state, message) {
+    const field = input.closest(".account-dialog__field");
+    const msg = form.querySelector(`#${input.id}-msg`);
+    field.classList.toggle("is-invalid", state === "error");
+    field.classList.toggle("is-valid", state === "success");
+    msg.textContent = message || "";
+    msg.className = "account-dialog__msg" + (state ? ` is-${state}` : "");
+    if (state === "error") input.setAttribute("aria-invalid", "true");
+    else input.removeAttribute("aria-invalid");
+  }
+
+  function updatePasswordRules() {
+    const list = form.querySelector("#account-password-rules");
+    const value = form.elements.password.value;
+    list.hidden = dialog.dataset.mode !== "signup";
+    const rules = passwordRules(value);
+    list.querySelectorAll("li").forEach((item) => {
+      item.classList.toggle("is-met", rules[item.dataset.rule]);
     });
+  }
+
+  function validateField(input, { force = false } = {}) {
+    const error = checks[input.name](input.value);
+    const showErrors = force || touched.has(input.name);
+    const isLogin = dialog.dataset.mode === "login";
+    if (!error) {
+      // In log-in mode we don't praise the password: we can't know it's right until submit.
+      if (isLogin && input.name === "password") setFieldState(input, null, "");
+      else setFieldState(input, "success", successText[input.name]);
+    } else if (showErrors) {
+      setFieldState(input, "error", error);
+    } else {
+      setFieldState(input, null, "");
+    }
+    return !error;
+  }
+
+  form.addEventListener("input", (event) => {
+    const input = event.target;
+    if (!checks[input.name]) return;
+    form.querySelector(".account-dialog__status").hidden = true;
+    validateField(input);
+    if (input.name === "password") {
+      updatePasswordRules();
+      // keep the confirm field honest if the password changes after it was filled
+      const confirm = form.elements.confirmPassword;
+      if (confirm.value || touched.has("confirmPassword")) validateField(confirm);
+    }
   });
   form.addEventListener("focusout", (event) => {
     const input = event.target;
-    if (dialog.dataset.mode === "signup" && input.matches("input[required]")) {
-      setRequiredFieldError(input, true);
-    }
+    if (!checks[input.name]) return;
+    // don't flag a field the user just tabbed through without typing in it, unless they've been there before
+    if (!input.value && !touched.has(input.name)) return;
+    touched.add(input.name);
+    validateField(input);
   });
-  form.addEventListener("keydown", (event) => {
-    if (dialog.dataset.mode !== "signup" || event.key !== "Tab" || event.shiftKey) return;
-    const requiredInputs = Array.from(form.querySelectorAll("input[required]"));
-    const currentIndex = requiredInputs.indexOf(event.target);
-    const nextInput = requiredInputs[currentIndex + 1];
-    if (nextInput && !canMoveToField(nextInput)) event.preventDefault();
-  });
-  form.addEventListener("pointerdown", (event) => {
-    if (dialog.dataset.mode !== "signup") return;
-    const target = event.target.closest("input, label");
-    const targetInput = target && (target.matches("input") ? target : target.control);
-    if (targetInput && !canMoveToField(targetInput)) event.preventDefault();
-  });
+
+  form.resetValidation = () => {
+    touched.clear();
+    form.querySelectorAll("input").forEach((input) => setFieldState(input, null, ""));
+    updatePasswordRules();
+  };
+  form.validateAll = () => {
+    let firstInvalid = null;
+    activeInputs().forEach((input) => {
+      touched.add(input.name);
+      if (!validateField(input, { force: true }) && !firstInvalid) firstInvalid = input;
+    });
+    return firstInvalid;
+  };
+  form.setFieldError = (input, message) => setFieldState(input, "error", message);
 
   dialog.querySelectorAll("[data-close-account]").forEach((button) => {
     button.addEventListener("click", () => {
@@ -788,37 +896,31 @@ function setupAccountUI() {
     event.preventDefault();
     const form = event.currentTarget;
     const mode = dialog.dataset.mode;
-    if (mode === "signup") {
-      const emptyRequiredInput = Array.from(form.querySelectorAll("input[required]"))
-        .find((input) => !input.value.trim());
-      if (emptyRequiredInput) {
-        setRequiredFieldError(emptyRequiredInput, true);
-        emptyRequiredInput.focus();
-        return;
-      }
+    const firstInvalid = form.validateAll();
+    if (firstInvalid) {
+      const status = form.querySelector(".account-dialog__status");
+      const count = activeInputs().filter((input) => input.getAttribute("aria-invalid")).length;
+      status.textContent = `Please fix the ${count === 1 ? "highlighted field" : count + " highlighted fields"} above.`;
+      status.hidden = false;
+      firstInvalid.focus();
+      return;
     }
-    if (!form.reportValidity()) return;
 
     const email = form.elements.email.value.trim();
     const status = dialog.querySelector(".account-dialog__form .account-dialog__status");
     let profile = getDemoAccountProfile();
     if (mode === "signup") {
-      if (form.elements.password.value !== form.elements.confirmPassword.value) {
-        status.textContent = "Passwords do not match";
-        status.hidden = false;
-        form.elements.confirmPassword.setAttribute("aria-invalid", "true");
-        form.elements.confirmPassword.focus();
-        return;
-      }
-      form.elements.confirmPassword.removeAttribute("aria-invalid");
       profile = {
         firstName: form.elements.firstName.value.trim(),
         lastName: form.elements.lastName.value.trim(),
         email,
       };
     } else if (!profile || profile.email.toLowerCase() !== email.toLowerCase()) {
-      status.textContent = "No demo account with that email exists in this browser session. Please sign up first.";
-      status.hidden = false;
+      form.setFieldError(
+        form.elements.email,
+        "We couldn't find an account with this email in this browser session. Check for typos, or choose \"Sign up\" above to create one."
+      );
+      form.elements.email.focus();
       return;
     }
 

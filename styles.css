@@ -39,6 +39,7 @@
   --toggle-knob: #665366;
   --scrim: rgba(0, 0, 0, 0.32);
   --error: #b3261e;
+  --success: #1b7a3a;
   --card-border: #f1eef6;
 
   /* icons are exported in light colors, dark mode re-tints them */
@@ -75,6 +76,7 @@
   --toggle-track: #3e3b43;
   --toggle-knob: #cdb4f0;
   --error: #f2b8b5;
+  --success: #8fd5a6;
   --card-border: #3e3b43;
 
   --icon-filter: brightness(0) invert(83%) sepia(14%) saturate(1200%)
@@ -1379,10 +1381,124 @@ img {
   outline-color: var(--error);
 }
 
-.account-dialog__error {
-  margin: -8px 0 0;
-  color: var(--error);
+.account-dialog__required-note {
+  margin: 0;
+  color: var(--on-surface-medium);
   font-size: 13px;
+}
+
+.account-dialog__field {
+  gap: 6px;
+}
+
+.account-dialog__form label {
+  margin-bottom: 0;
+}
+
+.account-dialog__control {
+  position: relative;
+}
+
+.account-dialog__control input {
+  padding-right: 40px;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.account-dialog__field.is-invalid input {
+  border-color: var(--error);
+  border-width: 2px;
+  outline-color: var(--error);
+}
+
+.account-dialog__field.is-valid input {
+  border-color: var(--success);
+  outline-color: var(--success);
+}
+
+.account-dialog__icon {
+  position: absolute;
+  top: 50%;
+  right: 12px;
+  display: none;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  color: var(--surface);
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.account-dialog__field.is-invalid .account-dialog__icon {
+  display: grid;
+  background: var(--error);
+}
+
+.account-dialog__field.is-invalid .account-dialog__icon::before {
+  content: "!";
+}
+
+.account-dialog__field.is-valid .account-dialog__icon {
+  display: grid;
+  background: var(--success);
+}
+
+.account-dialog__field.is-valid .account-dialog__icon::before {
+  content: "✓";
+}
+
+.account-dialog__msg {
+  min-height: 0;
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.account-dialog__msg:empty {
+  display: none;
+}
+
+.account-dialog__msg.is-error {
+  color: var(--error);
+}
+
+.account-dialog__msg.is-error::before {
+  content: "⚠ ";
+}
+
+.account-dialog__msg.is-success {
+  color: var(--success);
+}
+
+.account-dialog__rules {
+  display: grid;
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  color: var(--on-surface-medium);
+  font-size: 13px;
+}
+
+.account-dialog__rules[hidden] {
+  display: none;
+}
+
+.account-dialog__rules li::before {
+  content: "○";
+  display: inline-block;
+  width: 18px;
+}
+
+.account-dialog__rules li.is-met {
+  color: var(--success);
+}
+
+.account-dialog__rules li.is-met::before {
+  content: "✓";
 }
 
 .account-dialog__submit,
@@ -1391,7 +1507,9 @@ img {
 }
 
 .account-dialog__status {
-  color: var(--on-surface-medium);
+  margin: 0;
+  color: var(--error);
+  font-weight: 600;
 }
 
 .dialog h2 {
@@ -1891,13 +2009,38 @@ img {
     line-height: 56px;
   }
 
-  .dialog p {
+  .dialog:not(.account-dialog) p {
     display: none;
   }
 
   .dialog .btn {
     width: 144px;
     height: 48px;
+  }
+
+  .account-dialog {
+    width: 520px;
+    min-height: 0;
+  }
+
+  .account-dialog .account-dialog__inner {
+    align-items: stretch;
+    gap: 16px;
+    width: 100%;
+  }
+
+  .account-dialog h2 {
+    font-size: 32px;
+    line-height: 40px;
+  }
+
+  .account-dialog .account-dialog__tab {
+    width: auto;
+  }
+
+  .account-dialog .account-dialog__submit,
+  .account-dialog .account-dialog__cancel {
+    width: 100%;
   }
 }
 

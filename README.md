@@ -26,9 +26,37 @@ No dependencies, installs or build step are needed — it's plain HTML, CSS and 
 
 `styles.css` holds the layout, light/dark colors and animations; `app.js` holds the listing data and all interactions. Icons and photos are in `assets/`.
 
-## Assignment 12 - Form Validation & User Feedback
-## Account prototype
-Use **Log in / Sign up** in the desktop header or mobile menu to open the account dialog. Sign-up collects a first name, last name, email, password, and matching password confirmation. The profile is kept only in the current browser tab's session storage; passwords are compared for a match but never saved. Once signed in, the user's name appears in the account control; clicking it reveals options to log in/sign up or sign out. Signing out keeps the demo profile for the current tab so it can be used to log in again. Sending a seller message also prompts users to log in or sign up first. This is a front-end demonstration only: it does not create real accounts or authenticate users.
+## Assignment 12 – Form Validation & User Feedback
+
+### Where to find the form
+Click **Log in / Sign up** in the desktop header (or in the ☰ mobile menu). Pressing **Send** on the Contact Seller page also opens it if you aren't signed in. Use the **Sign up** tab to see all five fields: first name, last name, email, password and confirm password.
+
+> Prototype only: no real accounts are created. The profile lives in this browser tab's session storage, and passwords are never saved.
+
+### How validation works
+- **Real time, not on submit.** Errors show when you leave a field (blur). After that, the field re-checks on every keystroke, so the error goes away as soon as you fix it. While you're still typing in a field for the first time, you only see positive feedback, never an error.
+- **Inline, next to the field.** Each message appears directly under its input. There are no alert boxes or error lists at the top of the page.
+- **Visual cues.** Invalid fields get a red border, a ⚠ message and a red "!" icon. Valid fields get a green border, a green ✓ icon and a success message (for example "Valid email address." or "Passwords match.").
+- **Live password checklist.** Each rule (8+ characters, a letter, a number) turns green with a ✓ as soon as it's met.
+- **Submit as a safety net.** If you press Sign up / Log in early, every field is checked, each problem is shown inline, focus jumps to the first one, and a short note says how many fields need fixing.
+
+### Rules and example messages
+| Field | Checks | Example messages |
+|---|---|---|
+| First / last name | required, 2–40 chars, letters/spaces/hyphens/apostrophes | "Last name needs at least 2 letters." / "First name can only use letters, spaces, hyphens (-) or apostrophes (')." |
+| Email | required, no spaces, exactly one @, text before and after @, full domain, 2+ letter ending | "Your email is missing an "@". Use a format like name@example.com." / ""gmail" isn't a complete domain. It needs a dot and an ending, like example.com." |
+| Password (sign up) | required, no spaces, 8+ characters, a letter, a number | "Password must be at least 8 characters. Add 4 more." / "Add at least one number (0–9) to your password." |
+| Confirm password | required, must match (re-checked live if the password changes) | "Passwords don't match. Re-type the same password you entered above." |
+| Email (log in) | must match the account created in this tab | "We couldn't find an account with this email in this browser session. Check for typos, or choose "Sign up" above to create one." |
+
+### Quick demo script
+1. Open **Log in / Sign up**, then choose **Sign up**.
+2. Type `K` in First name and press Tab: an inline error appears. Type `ailyn`: it turns green ("Looks good!").
+3. Type `kailyn`, `kailyn@`, `kailyn@gmail` and `kailyn@gmail.com` in Email. Each one gets its own specific message.
+4. Type a password slowly and watch the checklist fill in.
+5. Enter a different confirm password to see the mismatch error, then fix it.
+6. Press **Sign up**. Your name appears in the header.
+7. Sign out, open **Log in**, and press **Log in** with empty fields to see the submit safety net.
 
 ## Assignment 11 – Interactive search & micro-interactions
 
