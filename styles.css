@@ -552,7 +552,7 @@ img {
    THEME TOGGLE
    ========================================================= */
 .toggle {
-  justify-content: flex-end;
+  justify-content: flex-start;
   width: 76px;
   height: 38px;
   padding: 4px 6px;
@@ -571,7 +571,7 @@ img {
 }
 
 .toggle[aria-checked="true"] .toggle__knob {
-  transform: translateX(-30px);
+  transform: translateX(30px);
 }
 
 /* =========================================================
@@ -1296,15 +1296,13 @@ img {
 }
 
 .settings-dialog__theme h3,
-.settings-dialog__profile h3,
-.settings-dialog__password h3 {
+.settings-dialog__profile h3 {
   font-size: 16px;
   line-height: 24px;
 }
 
 .settings-dialog__theme p,
-.settings-dialog__section > p,
-.settings-dialog__password p {
+.settings-dialog__section > p {
   color: var(--on-surface-medium);
   font-size: 13px;
   line-height: 1.5;
@@ -1348,14 +1346,23 @@ img {
 }
 
 .settings-dialog__status {
-  color: var(--success);
-  font-size: 13px;
-}
-
-.settings-dialog__password {
-  gap: 6px;
-  padding-top: 16px;
-  border-top: 1px solid var(--outline);
+  position: fixed;
+  top: max(16px, env(safe-area-inset-top));
+  right: auto;
+  bottom: auto;
+  left: 50%;
+  z-index: 20;
+  width: min(440px, calc(100vw - 32px));
+  margin: 0;
+  padding: 14px 18px;
+  transform: translateX(-50%);
+  background: var(--success);
+  border-radius: var(--radius-md);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.24);
+  color: var(--surface);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.4;
 }
 
 .account-dialog__inner,
@@ -2029,7 +2036,7 @@ img {
     line-height: 56px;
   }
 
-  .dialog:not(.account-dialog) p {
+  .dialog:not(.account-dialog):not(.settings-dialog) p {
     display: none;
   }
 
@@ -2079,6 +2086,14 @@ img {
 
   .settings-dialog__profile .btn {
     width: 100%;
+  }
+
+  .settings-dialog__status {
+    top: auto;
+    right: max(24px, env(safe-area-inset-right));
+    bottom: max(24px, env(safe-area-inset-bottom));
+    left: auto;
+    transform: none;
   }
 }
 

@@ -610,6 +610,7 @@ function updateSettingsUI() {
     dialog.querySelector("[data-settings-email]").textContent = profile.email;
     dialog.querySelector("#settings-first-name").value = profile.firstName;
     dialog.querySelector("#settings-last-name").value = profile.lastName;
+    dialog.querySelector("#settings-profile-email").value = profile.email;
     dialog.querySelector("#settings-phone").value = profile.phone || "";
   }
 }
@@ -756,15 +757,13 @@ function setupAccountUI() {
           <input id="settings-first-name" name="firstName" type="text" autocomplete="given-name" required minlength="2" maxlength="40" />
           <label for="settings-last-name">Last name</label>
           <input id="settings-last-name" name="lastName" type="text" autocomplete="family-name" required minlength="2" maxlength="40" />
+          <label for="settings-profile-email">Email</label>
+          <input id="settings-profile-email" name="email" type="email" autocomplete="email" required maxlength="254" />
           <label for="settings-phone">Phone number</label>
           <input id="settings-phone" name="phone" type="tel" autocomplete="tel" maxlength="32" />
           <button class="btn btn--container" type="submit">Save profile</button>
           <p class="settings-dialog__status" role="status" hidden></p>
         </form>
-        <section class="settings-dialog__password u-flex-col">
-          <h3>Password</h3>
-          <p>Password changes aren't available in this prototype because passwords are never stored. A live account would let you securely reset your password.</p>
-        </section>
       </div>
     </div>`;
   document.body.append(settingsDialog);
@@ -958,6 +957,12 @@ function setupAccountUI() {
   });
   headerMenu.querySelector("[data-settings-open]").addEventListener("click", openSettingsDialog);
   settingsDialog.querySelector("[data-close-settings]").addEventListener("click", () => settingsDialog.close());
+  const settingsStatus = settingsDialog.querySelector(".settings-dialog__status");
+  let settingsStatusTimeout;
+  settingsDialog.addEventListener("close", () => {
+    clearTimeout(settingsStatusTimeout);
+    settingsStatus.hidden = true;
+  });
   settingsDialog.querySelectorAll("[data-settings-auth]").forEach((button) => {
     button.addEventListener("click", () => {
       const mode = button.dataset.settingsAuth;
@@ -974,21 +979,27 @@ function setupAccountUI() {
     }
 
     const settingsForm = event.currentTarget;
-    const status = settingsForm.querySelector(".settings-dialog__status");
     const updatedProfile = {
       ...profile,
       firstName: settingsForm.elements.firstName.value.trim(),
       lastName: settingsForm.elements.lastName.value.trim(),
+      email: settingsForm.elements.email.value.trim(),
       phone: settingsForm.elements.phone.value.trim(),
     };
     demoAccountProfile = updatedProfile;
+    demoAccountEmail = updatedProfile.email;
     try {
       sessionStorage.setItem("demo-account-profile", JSON.stringify(updatedProfile));
-      status.textContent = "Profile updated.";
+      sessionStorage.setItem("demo-account-email", updatedProfile.email);
+      settingsStatus.textContent = "Profile updated.";
     } catch {
-      status.textContent = "Profile updated for this page only; browser session storage is unavailable.";
+      settingsStatus.textContent = "Profile updated for this page only; browser session storage is unavailable.";
     }
-    status.hidden = false;
+    settingsStatus.hidden = false;
+    clearTimeout(settingsStatusTimeout);
+    settingsStatusTimeout = setTimeout(() => {
+      settingsStatus.hidden = true;
+    }, 3000);
     updateAccountLabels();
   });
   document.addEventListener("click", (event) => {
