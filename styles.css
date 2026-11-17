@@ -110,10 +110,7 @@ body > header {
 }
 
 body[data-page="search"] > #main {
-  flex: 1;
   min-height: 0;
-  display: flex;
-  flex-direction: column;
   overflow: hidden;
 }
 
@@ -135,6 +132,38 @@ img {
 /* the hidden attribute always wins over display rules below */
 [hidden] {
   display: none !important;
+}
+
+/* SHARED LAYOUT UTILITIES */
+.u-flex {
+  display: flex;
+}
+
+.u-flex-col {
+  display: flex;
+  flex-direction: column;
+}
+
+.u-flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.u-flex-1 {
+  flex: 1;
+}
+
+.u-items-center {
+  align-items: center;
+}
+
+.u-justify-center {
+  justify-content: center;
+}
+
+.u-justify-between {
+  justify-content: space-between;
 }
 
 .icon {
@@ -244,17 +273,12 @@ img {
    ========================================================= */
 .navbar {
   position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   height: 80px;
   padding: 21px 16px;
   background: var(--header);
 }
 
 .brand {
-  display: flex;
-  align-items: center;
   gap: 20px;
   color: #ffffff;
   text-decoration: none;
@@ -299,7 +323,6 @@ img {
   right: 8px;
   z-index: 20;
   display: none;
-  align-items: center;
   gap: 8px;
 }
 
@@ -329,8 +352,6 @@ img {
    SECONDARY NAVBAR (Back + search)
    ========================================================= */
 .subnav {
-  display: flex;
-  align-items: center;
   gap: 13px;
   min-height: 63px;
   padding: 4px 16px 3px;
@@ -338,8 +359,6 @@ img {
 }
 
 .subnav__left {
-  display: flex;
-  align-items: center;
   gap: 8px;
   flex-shrink: 0;
 }
@@ -380,8 +399,6 @@ img {
 }
 
 .search__field {
-  display: flex;
-  align-items: center;
   gap: 12px;
   height: 48px;
   padding: 0 16px;
@@ -446,18 +463,12 @@ img {
   left: 0;
   right: 0;
   z-index: 20;
-  display: flex;
-  flex-direction: column;
   gap: 8px;
   padding: 16px;
   list-style: none;
   background: var(--surface-raised);
   border-radius: var(--radius-lg);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
-}
-
-.suggestions[hidden] {
-  display: none;
 }
 
 .suggestions__label {
@@ -469,8 +480,6 @@ img {
 }
 
 .suggestions a {
-  display: flex;
-  align-items: center;
   height: 32px;
   padding: 0 12px;
   background: var(--outline);
@@ -489,8 +498,6 @@ img {
    HOME / DASHBOARD
    ========================================================= */
 .home {
-  display: flex;
-  flex-direction: column;
   gap: 16px;
   padding: 16px;
   margin-top: 5px;
@@ -514,9 +521,6 @@ img {
 }
 
 .category-card {
-  display: flex;
-  align-items: center;
-  justify-content: center;
   height: 96px;
   padding: 24px 40px;
   background: var(--container);
@@ -544,16 +548,10 @@ img {
   box-shadow: 0 2px 2px rgba(0, 0, 0, 0.25);
 }
 
-.theme-corner {
-  display: none;
-}
-
 /* =========================================================
    THEME TOGGLE
    ========================================================= */
 .toggle {
-  display: flex;
-  align-items: center;
   justify-content: flex-end;
   width: 76px;
   height: 38px;
@@ -606,8 +604,6 @@ img {
   top: 0;
   bottom: 0;
   left: 0;
-  display: flex;
-  flex-direction: column;
   gap: 8px;
   width: 296px;
   max-width: 85vw;
@@ -746,7 +742,6 @@ img {
 }
 
 .mobile-filters {
-  display: flex;
   gap: 8px;
   margin: 0 0 16px;
   padding: 2px 8px 4px;
@@ -769,22 +764,16 @@ img {
    ========================================================= */
 
 .results {
-  flex: 1;
   min-width: 0;
   min-height: 0;
-  display: flex;
-  flex-direction: column;
   overflow-y: scroll;
 }
 
 .results-page {
-  flex: 1;
   padding: 14px 6px 32px;
 
   /* min height lets content shrink into available space */
   min-height: 0;
-  display: flex;
-  flex-direction: column;
   overflow: hidden;
 }
 
@@ -809,15 +798,12 @@ img {
   gap: 18px 5px;
   list-style: none;
 
-  flex: 1;
   min-height: 0;
   overflow-y: auto;
   align-content: start;
 }
 
 .listing-card {
-  display: flex;
-  flex-direction: column;
   height: 100%;
   padding: 10px;
   background: var(--surface);
@@ -900,8 +886,6 @@ img {
 }
 
 .listing-card__meta {
-  display: flex;
-  align-items: center;
   gap: 4px;
   font-size: 12px;
   line-height: 16px;
@@ -920,7 +904,6 @@ img {
 }
 
 .empty-state__action {
-  display: flex;
   width: max-content;
   margin: 16px auto 0;
 }
@@ -981,8 +964,6 @@ img {
    PAGE BAR (mobile "Back | Listing details")
    ========================================================= */
 .page-bar {
-  display: flex;
-  align-items: center;
   gap: 12px;
   padding: 8px 16px;
   background: var(--surface);
@@ -1002,10 +983,6 @@ img {
    LISTING DETAILS
    ========================================================= */
 .listing {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-
   min-height: 0;
   overflow-y: auto;
 }
@@ -1016,8 +993,6 @@ img {
 }
 
 .listing__layout {
-  display: flex;
-  flex-direction: column;
   gap: 16px;
   padding: 16px;
 }
@@ -1054,8 +1029,6 @@ img {
 }
 
 .listing__info {
-  display: flex;
-  flex-direction: column;
   gap: 16px;
 }
 
@@ -1076,8 +1049,6 @@ img {
 }
 
 .listing__desc {
-  display: flex;
-  flex-direction: column;
   gap: 1em;
   font-size: 15px;
   line-height: normal;
@@ -1085,7 +1056,6 @@ img {
 
 .tag {
   display: inline-flex;
-  align-items: center;
   height: 49px;
   padding: 0 20px;
   background: var(--primary);
@@ -1100,7 +1070,6 @@ img {
 }
 
 .listing__facts {
-  flex-direction: column;
   gap: 14px;
   align-items: flex-start;
 }
@@ -1111,8 +1080,6 @@ img {
 }
 
 .location-card {
-  display: flex;
-  flex-direction: column;
   gap: 12px;
   padding: 16px;
   background: var(--surface);
@@ -1187,15 +1154,10 @@ img {
    CONTACT SELLER
    ========================================================= */
 .contact {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
   min-height: 0;
 }
 
 .contact__body {
-  display: flex;
-  flex-direction: column;
   gap: 16px;
   padding: 16px;
 }
@@ -1221,8 +1183,6 @@ img {
 }
 
 .message-form {
-  display: flex;
-  flex-direction: column;
   gap: 8px;
 }
 
@@ -1286,8 +1246,6 @@ img {
 }
 
 .dialog__inner {
-  display: flex;
-  flex-direction: column;
   gap: 12px;
 }
 
@@ -1315,8 +1273,6 @@ img {
 .settings-dialog__inner,
 .settings-dialog__section,
 .settings-dialog__profile {
-  display: flex;
-  flex-direction: column;
   gap: 16px;
 }
 
@@ -1333,9 +1289,6 @@ img {
 }
 
 .settings-dialog__theme {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
   gap: 16px;
   padding: 12px 0;
   border-top: 1px solid var(--outline);
@@ -1357,17 +1310,11 @@ img {
   line-height: 1.5;
 }
 
-.settings-dialog__section[hidden] {
-  display: none;
-}
-
 .settings-dialog__actions {
-  display: flex;
   gap: 10px;
 }
 
 .settings-dialog__actions .btn {
-  flex: 1;
   padding: 0 12px;
 }
 
@@ -1406,25 +1353,18 @@ img {
 }
 
 .settings-dialog__password {
-  display: flex;
-  flex-direction: column;
   gap: 6px;
   padding-top: 16px;
   border-top: 1px solid var(--outline);
 }
 
 .account-dialog__inner,
-.account-dialog__form,
-.account-dialog__summary {
-  display: flex;
-  flex-direction: column;
+.account-dialog__form {
   gap: 14px;
 }
 
 .account-dialog__heading {
-  display: flex;
   align-items: flex-start;
-  justify-content: space-between;
   gap: 16px;
   padding-right: 40px;
 }
@@ -1457,25 +1397,13 @@ img {
   background: var(--surface-raised);
 }
 
-.account-dialog__field {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-
-.account-dialog__notice,
-.account-dialog__status {
+.account-dialog__notice {
   font-size: 13px;
   line-height: 1.5;
 }
 
 .account-dialog__tabs {
-  display: flex;
   gap: 8px;
-}
-
-.account-dialog__tab {
-  flex: 1;
 }
 
 .account-dialog__tab[aria-pressed="true"] {
@@ -1484,7 +1412,6 @@ img {
 }
 
 .account-dialog__form label {
-  margin-bottom: -10px;
   font-size: 14px;
   font-weight: 600;
 }
@@ -1512,10 +1439,6 @@ img {
 
 .account-dialog__field {
   gap: 6px;
-}
-
-.account-dialog__form label {
-  margin-bottom: 0;
 }
 
 .account-dialog__control {
@@ -1606,10 +1529,6 @@ img {
   font-size: 13px;
 }
 
-.account-dialog__rules[hidden] {
-  display: none;
-}
-
 .account-dialog__rules li::before {
   content: "○";
   display: inline-block;
@@ -1633,6 +1552,8 @@ img {
   margin: 0;
   color: var(--error);
   font-weight: 600;
+  font-size: 13px;
+  line-height: 1.5;
 }
 
 .dialog h2 {
@@ -1645,11 +1566,6 @@ img {
    404 PAGE
    ========================================================= */
 .not-found {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
   gap: 16px;
   padding: 48px 16px;
   text-align: center;
@@ -1673,9 +1589,7 @@ img {
 }
 
 .not-found__actions {
-  display: flex;
   flex-wrap: wrap;
-  justify-content: center;
   gap: 12px;
   margin-top: 8px;
 }
@@ -1684,6 +1598,15 @@ img {
    DESKTOP (900px and up)
    ========================================================= */
 @media (min-width: 900px) {
+  .u-desktop-flex-col {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .u-desktop-flex-1 {
+    flex: 1;
+  }
+
   .mobile-only {
     display: none !important;
   }
@@ -1775,7 +1698,6 @@ img {
 
   /* home */
   .home {
-    flex: 1;
     justify-content: center;
     align-items: center;
     gap: 60px;
@@ -1829,13 +1751,6 @@ img {
     font-size: 36px;
   }
 
-  .theme-corner {
-    display: block;
-    position: fixed;
-    right: 42px;
-    bottom: 42px;
-  }
-
   /* search results */
   .results {
     gap: 32px;
@@ -1843,7 +1758,6 @@ img {
   }
 
   .results-page {
-    display: flex;
     gap: 48px;
     padding: 24px 75px 32px;
     flex-direction: row;
@@ -1854,8 +1768,6 @@ img {
   }
 
   .filters {
-    display: flex;
-    flex-direction: column;
     gap: 15px;
     flex: 0 0 345px;
     align-self: flex-start;
@@ -1876,8 +1788,6 @@ img {
   }
 
   .filter-group {
-    display: flex;
-    flex-direction: column;
     gap: 11px;
   }
 
@@ -1887,7 +1797,6 @@ img {
 
   .filter-group__header {
     display: flex;
-    align-items: center;
     width: 100%;
     min-height: 44px;
     padding: 8px 10px;
@@ -1908,19 +1817,13 @@ img {
   }
 
   .filter-group__options {
-    display: flex;
     flex-wrap: wrap;
     gap: 6px 8px;
     padding: 2px;
   }
 
-  .filter-group__options[hidden] {
-    display: none;
-  }
-
   .results__toolbar {
     display: flex;
-    align-items: center;
     gap: 16px;
   }
 
@@ -1948,8 +1851,6 @@ img {
   }
 
   .listing-card__body {
-    display: flex;
-    flex-direction: column;
     gap: 4px;
     padding: 12px 16px 16px;
   }
@@ -1972,8 +1873,6 @@ img {
   }
 
   .listing__media {
-    display: flex;
-    flex-direction: column;
     gap: 43px;
     flex: 0 0 433px;
   }
@@ -1988,12 +1887,7 @@ img {
     height: 40px;
   }
 
-  .listing__facts {
-    display: flex;
-  }
-
   .listing__info {
-    flex: 1;
     min-width: 0;
     gap: 28px;
   }
@@ -2028,8 +1922,6 @@ img {
   }
 
   .location-card__text {
-    display: flex;
-    flex-direction: column;
     align-items: flex-end;
     gap: 18px;
     flex: 0 0 145px;
@@ -2053,7 +1945,6 @@ img {
   }
 
   .location-card__map {
-    flex: 1;
     height: 205px;
     background: var(--thumb);
     border-radius: var(--radius-sm);
@@ -2061,7 +1952,6 @@ img {
 
   /* contact seller */
   .contact__body {
-    flex: 1;
     min-height: 0;
     width: min(880px, 100% - 64px);
     margin: 0 auto;
@@ -2082,12 +1972,10 @@ img {
   }
 
   .message-form {
-    flex: 1;
     min-height: 0;
   }
 
   .message-form label {
-    flex: 1;
     min-height: 80px;
     position: absolute;
     width: 1px;
@@ -2219,7 +2107,6 @@ img {
     display: none !important;
   }
   .home {
-    flex: 1;
     min-height: 0;
   }
 
@@ -2280,8 +2167,6 @@ img {
 }
 
 .suggestions a.suggestion {
-  display: flex;
-  align-items: center;
   gap: 12px;
   height: auto;
   min-height: 44px;
@@ -2327,8 +2212,6 @@ img {
 }
 
 .suggestion__text {
-  display: flex;
-  flex-direction: column;
   min-width: 0;
 }
 
@@ -2374,8 +2257,6 @@ img {
 }
 
 .suggestions__empty {
-  display: flex;
-  flex-direction: column;
   gap: 4px;
   padding: 12px 8px;
   font-size: 14px;
@@ -2400,10 +2281,7 @@ img {
 
 /* --- Search page loading: progress bar + skeleton cards --- */
 body[data-page="search"] #loading:not([hidden]) {
-  flex: 1;
   min-height: 0;
-  display: flex;
-  flex-direction: column;
   overflow-y: auto;
 }
 
@@ -2423,8 +2301,6 @@ body[data-page="search"] #loading:not([hidden]) {
 }
 
 .skeleton-card {
-  display: flex;
-  flex-direction: column;
   gap: 8px;
   padding: 10px;
   border: 1px solid var(--card-border);
@@ -2483,9 +2359,6 @@ body[data-page="search"] #loading:not([hidden]) {
 }
 
 .loading__error {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
   gap: 8px;
   padding: 24px 16px;
   text-align: center;
@@ -2567,9 +2440,6 @@ body[data-page="search"] #loading:not([hidden]) {
   position: absolute;
   inset: 0;
   z-index: 500; /* above Leaflet panes */
-  display: flex;
-  align-items: center;
-  justify-content: center;
   gap: 10px;
   background: var(--surface-raised);
   font-size: 14px;

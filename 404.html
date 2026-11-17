@@ -14,7 +14,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+Pro:wght@600&display=swap" rel="stylesheet" />
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
   <meta name="theme-color" content="#800080" />
-  <link rel="stylesheet" href="styles.css?v=202611160001" />
+  <link rel="stylesheet" href="styles.css?v=202611160002" />
   <script>
     try { document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"; } catch (e) {}
   </script>
@@ -22,27 +22,27 @@
 
 <body data-page="notfound">
   <a class="skip-link" href="#main">Skip to content</a>
-  <header class="navbar">
+  <header class="navbar u-flex-center">
     <button class="menu-btn mobile-only" type="button" aria-label="Open menu" data-open-menu>
       <img src="assets/menu-white.svg" width="33" height="30" alt="" />
     </button>
-    <a class="brand" href="index.html">
+    <a class="brand u-flex u-items-center" href="index.html">
       <img class="brand__logo brand__logo--mobile" src="assets/logo-mobile.svg" width="38" height="38" alt="" />
       <img class="brand__logo brand__logo--desktop" src="assets/logo-desktop.svg" width="66" height="66" alt="" />
       <span class="brand__name">craigslist</span>
     </a>
   </header>
 
-  <main class="not-found" id="main">
+  <main class="not-found u-flex-col u-flex-1 u-items-center u-justify-center" id="main">
     <p class="not-found__code" aria-hidden="true">404</p>
     <h1>This listing has moved on</h1>
     <p>The page you're looking for doesn't exist or may have been taken down. Try searching for something else.</p>
-    <div class="not-found__actions">
+    <div class="not-found__actions u-flex u-justify-center">
       <a class="btn btn--container" href="index.html">Back to home</a>
       <a class="btn btn--outline" href="search.html">Browse all listings</a>
     </div>
   </main>
 
-  <script src="app.js?v=202611160001"></script>
+  <script src="app.js?v=202611160002"></script>
 </body>
 </html>

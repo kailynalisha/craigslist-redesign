@@ -645,7 +645,7 @@ function toggleAccountPopover(button) {
 
 function setupAccountUI() {
   const navbar = document.querySelector(".navbar");
-  const headerMenu = el("div", "account-menu account-menu--header");
+  const headerMenu = el("div", "account-menu account-menu--header u-items-center");
   headerMenu.innerHTML = `
     <button class="btn account-header account-settings" type="button" aria-label="Settings" data-settings-open>
       <span aria-hidden="true">⚙</span><span class="account-settings__label">Settings</span>
@@ -661,19 +661,19 @@ function setupAccountUI() {
   dialog.id = "account-dialog";
   dialog.setAttribute("aria-labelledby", "account-title");
   dialog.innerHTML = `
-    <div class="account-dialog__inner">
-      <div class="account-dialog__heading">
+    <div class="account-dialog__inner u-flex-col">
+      <div class="account-dialog__heading u-flex u-justify-between">
         <h2 id="account-title">Log in or sign up</h2>
         <button class="account-dialog__dismiss" type="button" aria-label="Close sign-in dialog" data-close-account>×</button>
       </div>
       <p class="account-dialog__notice">Prototype only: this demo does not create real accounts. Do not use a real password; passwords are not saved.</p>
-      <div class="account-dialog__tabs" role="group" aria-label="Account action">
-        <button class="btn btn--outline account-dialog__tab" type="button" data-account-mode="login" aria-pressed="true">Log in</button>
-        <button class="btn btn--outline account-dialog__tab" type="button" data-account-mode="signup" aria-pressed="false">Sign up</button>
+      <div class="account-dialog__tabs u-flex" role="group" aria-label="Account action">
+        <button class="btn btn--outline account-dialog__tab u-flex-1" type="button" data-account-mode="login" aria-pressed="true">Log in</button>
+        <button class="btn btn--outline account-dialog__tab u-flex-1" type="button" data-account-mode="signup" aria-pressed="false">Sign up</button>
       </div>
-      <form class="account-dialog__form" novalidate>
+      <form class="account-dialog__form u-flex-col" novalidate>
         <p class="account-dialog__required-note">All fields are required.</p>
-        <div class="account-dialog__field" hidden>
+        <div class="account-dialog__field u-flex-col" hidden>
           <label for="account-first-name">First name</label>
           <div class="account-dialog__control">
             <input id="account-first-name" name="firstName" type="text" autocomplete="given-name" aria-describedby="account-first-name-msg" />
@@ -681,7 +681,7 @@ function setupAccountUI() {
           </div>
           <p class="account-dialog__msg" id="account-first-name-msg" aria-live="polite"></p>
         </div>
-        <div class="account-dialog__field" hidden>
+        <div class="account-dialog__field u-flex-col" hidden>
           <label for="account-last-name">Last name</label>
           <div class="account-dialog__control">
             <input id="account-last-name" name="lastName" type="text" autocomplete="family-name" aria-describedby="account-last-name-msg" />
@@ -689,7 +689,7 @@ function setupAccountUI() {
           </div>
           <p class="account-dialog__msg" id="account-last-name-msg" aria-live="polite"></p>
         </div>
-        <div class="account-dialog__field">
+        <div class="account-dialog__field u-flex-col">
           <label for="account-email">Email</label>
           <div class="account-dialog__control">
             <input id="account-email" name="email" type="email" autocomplete="email" aria-describedby="account-email-msg" />
@@ -697,7 +697,7 @@ function setupAccountUI() {
           </div>
           <p class="account-dialog__msg" id="account-email-msg" aria-live="polite"></p>
         </div>
-        <div class="account-dialog__field">
+        <div class="account-dialog__field u-flex-col">
           <label for="account-password">Password</label>
           <div class="account-dialog__control">
             <input id="account-password" name="password" type="password" autocomplete="current-password" aria-describedby="account-password-msg" />
@@ -710,7 +710,7 @@ function setupAccountUI() {
           </ul>
           <p class="account-dialog__msg" id="account-password-msg" aria-live="polite"></p>
         </div>
-        <div class="account-dialog__field" hidden>
+        <div class="account-dialog__field u-flex-col" hidden>
           <label for="account-confirm-password">Confirm password</label>
           <div class="account-dialog__control">
             <input id="account-confirm-password" name="confirmPassword" type="password" autocomplete="new-password" aria-describedby="account-confirm-password-msg" />
@@ -729,28 +729,28 @@ function setupAccountUI() {
   settingsDialog.id = "settings-dialog";
   settingsDialog.setAttribute("aria-labelledby", "settings-title");
   settingsDialog.innerHTML = `
-    <div class="settings-dialog__inner">
+    <div class="settings-dialog__inner u-flex-col">
       <div class="settings-dialog__heading">
         <h2 id="settings-title">Settings</h2>
         <button class="account-dialog__dismiss" type="button" aria-label="Close settings" data-close-settings>×</button>
       </div>
-      <section class="settings-dialog__theme" aria-label="Appearance">
+      <section class="settings-dialog__theme u-flex u-items-center u-justify-between" aria-label="Appearance">
         <div>
           <h3>Dark mode</h3>
           <p data-theme-label>Light theme is on</p>
         </div>
         ${toggleMarkup()}
       </section>
-      <section class="settings-dialog__section" data-settings-signedout>
+      <section class="settings-dialog__section u-flex-col" data-settings-signedout>
         <p>Sign in or create an account to manage your profile settings.</p>
-        <div class="settings-dialog__actions">
-          <button class="btn btn--container" type="button" data-settings-auth="signup">Sign up</button>
-          <button class="btn btn--outline" type="button" data-settings-auth="login">Sign in</button>
+        <div class="settings-dialog__actions u-flex">
+          <button class="btn btn--container u-flex-1" type="button" data-settings-auth="signup">Sign up</button>
+          <button class="btn btn--outline u-flex-1" type="button" data-settings-auth="login">Sign in</button>
         </div>
       </section>
-      <div class="settings-dialog__section" data-settings-signedin hidden>
+      <div class="settings-dialog__section u-flex-col" data-settings-signedin hidden>
         <p class="settings-dialog__email">Signed in as <strong data-settings-email></strong></p>
-        <form class="settings-dialog__profile">
+        <form class="settings-dialog__profile u-flex-col">
           <h3>Profile</h3>
           <label for="settings-first-name">First name</label>
           <input id="settings-first-name" name="firstName" type="text" autocomplete="given-name" required minlength="2" maxlength="40" />
@@ -761,7 +761,7 @@ function setupAccountUI() {
           <button class="btn btn--container" type="submit">Save profile</button>
           <p class="settings-dialog__status" role="status" hidden></p>
         </form>
-        <section class="settings-dialog__password">
+        <section class="settings-dialog__password u-flex-col">
           <h3>Password</h3>
           <p>Password changes aren't available in this prototype because passwords are never stored. A live account would let you securely reset your password.</p>
         </section>
@@ -1081,7 +1081,7 @@ function setTheme(theme) {
 }
 
 function toggleMarkup() {
-  return '<button class="toggle" type="button" role="switch" aria-label="Dark mode" data-theme-toggle><span class="toggle__knob"></span></button>';
+  return '<button class="toggle u-flex u-items-center" type="button" role="switch" aria-label="Dark mode" data-theme-toggle><span class="toggle__knob"></span></button>';
 }
 
 /* ---------- MENU DRAWER ---------- */
@@ -1091,7 +1091,7 @@ function buildDrawer() {
   drawer.id = "menu";
   drawer.innerHTML = `
     <button class="drawer__scrim" type="button" aria-label="Close menu" data-close-menu></button>
-    <nav class="drawer__panel" aria-label="Main menu" role="dialog" aria-modal="true">
+    <nav class="drawer__panel u-flex-col" aria-label="Main menu" role="dialog" aria-modal="true">
       <p class="drawer__title">Menu</p>
       <div class="account-menu account-menu--drawer">
         <button class="drawer__link drawer__account" type="button" data-account-open aria-haspopup="true" aria-expanded="false">Log in / Sign up</button>
@@ -1156,7 +1156,7 @@ function setupSearch(form) {
   const clear = form.querySelector(".search__clear");
   const onSearchPage = document.body.dataset.page === "search";
 
-  const list = el("ul", "suggestions");
+  const list = el("ul", "suggestions u-flex-col");
   list.hidden = true;
   list.id = "suggestions-" + Math.random().toString(36).slice(2, 7);
   list.setAttribute("role", "listbox");
@@ -1199,7 +1199,7 @@ function setupSearch(form) {
   function option(href, className) {
     const li = el("li");
     li.setAttribute("role", "presentation");
-    const link = el("a", className);
+    const link = el("a", `${className} u-flex u-items-center`);
     link.href = href;
     link.id = list.id + "-opt-" + list.querySelectorAll("[role='option']").length;
     link.setAttribute("role", "option");
@@ -1242,7 +1242,7 @@ function setupSearch(form) {
     const matches = rankListings(LISTINGS.filter((item) => matchesQuery(item, query)), query);
 
     if (matches.length === 0) {
-      const empty = el("li", "suggestions__empty");
+      const empty = el("li", "suggestions__empty u-flex-col");
       empty.setAttribute("role", "presentation");
       empty.append(el("strong", "", `No matches for “${query}”`));
       const tip = el("span", "", "Check the spelling or try ");
@@ -1264,7 +1264,7 @@ function setupSearch(form) {
       const link = option("listing.html?id=" + item.id, "suggestion");
       const thumb = el("span", "suggestion__thumb");
       thumb.append(img(item.image || CATEGORIES[item.category].icon, item.image ? "" : "icon"));
-      const text = el("span", "suggestion__text");
+      const text = el("span", "suggestion__text u-flex-col");
       const title = el("span", "suggestion__title");
       title.append(highlight(item.title, query));
       const metaParts = item.price === null ? [CATEGORIES[item.category].label, item.area] : [formatPrice(item), CATEGORIES[item.category].label, item.area];
@@ -1360,7 +1360,7 @@ function setupBackButtons() {
 /* ---------- LISTING CARD ---------- */
 function listingCard(item, index = 0) {
   const li = el("li");
-  const link = el("a", "listing-card");
+  const link = el("a", "listing-card u-flex-col");
   link.href = "listing.html?id=" + item.id;
   link.style.setProperty("--i", Math.min(index, 12)); // staggers the fade-in
 
@@ -1379,8 +1379,8 @@ function listingCard(item, index = 0) {
     thumb.append(img(CATEGORIES[item.category].icon, "icon"));
   }
 
-  const body = el("div", "listing-card__body");
-  const meta = el("p", "listing-card__meta");
+  const body = el("div", "listing-card__body u-desktop-flex-col");
+  const meta = el("p", "listing-card__meta u-flex u-items-center");
   meta.append(img("assets/icon-location.svg", "icon-muted"), document.createTextNode(`${item.area} · ${item.posted}`));
   body.append(el("p", "listing-card__price", formatPrice(item)), el("h2", "listing-card__title", item.title), meta);
 
@@ -1391,7 +1391,7 @@ function listingCard(item, index = 0) {
 
 function skeletonCards(n) {
   return Array.from({ length: n }, () => {
-    const li = el("li", "skeleton-card");
+    const li = el("li", "skeleton-card u-flex-col");
     li.setAttribute("aria-hidden", "true");
     li.append(el("div", "skeleton skeleton--thumb"), el("div", "skeleton skeleton--line skeleton--short"), el("div", "skeleton skeleton--line"), el("div", "skeleton skeleton--line skeleton--mid"));
     return li;
@@ -1466,7 +1466,7 @@ function initSearchPage() {
       // searched + filtered to a category: offer that whole category without the search
       if (state.query && state.category) {
         const label = CATEGORIES[state.category].label;
-        const link = el("a", "btn btn--outline empty-state__action", `See all ${label}`);
+        const link = el("a", "btn btn--outline empty-state__action u-flex", `See all ${label}`);
         link.href = "search.html?category=" + state.category;
         empty.append(link);
       }
@@ -1548,7 +1548,7 @@ function initSearchPage() {
         // failed fetch: stop the progress bar, say what happened, offer a retry
         loading.classList.add("has-error");
         loadingGrid.replaceChildren();
-        const box = el("div", "loading__error");
+        const box = el("div", "loading__error u-flex-col u-items-center");
         box.setAttribute("role", "alert");
         box.append(el("strong", "", "Couldn’t load listings"), el("p", "", "Check your internet connection and try again."));
         const retry = el("button", "btn btn--primary", "Try again");
@@ -1663,7 +1663,7 @@ function renderMap(item) {
   }
 
   const box = el("div", "location-card__leaflet");
-  const overlay = el("div", "map-loading");
+  const overlay = el("div", "map-loading u-flex-center");
   overlay.setAttribute("role", "status");
   overlay.append(spinner(), el("span", "", "Loading map…"));
   slot.replaceChildren(box, overlay);

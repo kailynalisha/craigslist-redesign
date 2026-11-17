@@ -15,7 +15,7 @@
   <meta property="og:description" content="Buy, sell and connect around Charlotte. A responsive Craigslist redesign by ITIS 4390 Group 6." />
   <meta property="og:image" content="https://kailynalisha.github.io/craigslist-redesign/assets/og-image.png" />
   <meta name="twitter:card" content="summary_large_image" />
-  <link rel="stylesheet" href="styles.css?v=202611160001" />
+  <link rel="stylesheet" href="styles.css?v=202611160002" />
   <script>
     try { document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"; } catch (e) {}
   </script>
@@ -24,16 +24,16 @@
 <body data-page="search">
   <a class="skip-link" href="#main">Skip to content</a>
   <header>
-    <div class="navbar">
-      <a class="brand" href="index.html">
+    <div class="navbar u-flex-center">
+      <a class="brand u-flex u-items-center" href="index.html">
         <img class="brand__logo brand__logo--mobile" src="assets/logo-mobile.svg" width="38" height="38" alt="" />
         <img class="brand__logo brand__logo--desktop" src="assets/logo-desktop.svg" width="66" height="66" alt="" />
         <span class="brand__name">craigslist</span>
       </a>
     </div>
 
-    <div class="subnav">
-      <div class="subnav__left">
+    <div class="subnav u-flex u-items-center">
+      <div class="subnav__left u-flex u-items-center">
         <button class="menu-btn mobile-only" type="button" aria-label="Open menu" data-open-menu>
           <img src="assets/menu-dark.svg" width="33" height="30" alt="" />
         </button>
@@ -42,7 +42,7 @@
       </div>
 
       <form class="search" action="search.html" role="search">
-        <div class="search__field">
+        <div class="search__field u-flex u-items-center">
           <img class="icon-muted" src="assets/icon-search.svg" width="24" height="24" alt="" />
           <label class="visually-hidden" for="q">Search craigslist</label>
           <input class="search__input" id="q" type="search" name="q" placeholder="Search craigslist" autocomplete="off" />
@@ -55,26 +55,26 @@
   </header>
 
   <!-- loading state -->
-  <div id="main" tabindex="-1">
-  <div id="loading" role="status">
+  <div id="main" class="u-flex-col u-flex-1" tabindex="-1">
+  <div id="loading" class="u-flex-col u-flex-1" role="status">
     <div class="progress"><div class="progress__bar"></div></div>
     <div class="loading">
       <strong>Searching…</strong>
       <p>Finding listings for <span id="loading-query">everything</span></p>
     </div>
     <!-- skeleton cards stand in for results while they load -->
-    <ul class="listing-grid skeleton-grid" id="loading-grid" aria-hidden="true"></ul>
+    <ul class="listing-grid skeleton-grid u-flex-1" id="loading-grid" aria-hidden="true"></ul>
   </div>
 
-  <main class="results-page" id="results-page" hidden>
+  <main class="results-page u-flex-col u-flex-1" id="results-page" hidden>
     <h1 class="results-page__heading" id="results-heading">Search Results</h1>
 
-    <aside class="filters" aria-label="Filters">
+    <aside class="filters u-desktop-flex-col" aria-label="Filters">
       <p class="filters__heading">FILTER</p>
 
-      <div class="filter-group">
-        <button class="filter-group__header" type="button" aria-expanded="true" aria-controls="filter-category">Filter Category</button>
-        <div class="filter-group__options" id="filter-category">
+      <div class="filter-group u-flex-col">
+        <button class="filter-group__header u-items-center" type="button" aria-expanded="true" aria-controls="filter-category">Filter Category</button>
+        <div class="filter-group__options u-flex" id="filter-category">
           <button class="chip" type="button" aria-pressed="false" data-filter="category" data-value="for-sale">For Sale</button>
           <button class="chip" type="button" aria-pressed="false" data-filter="category" data-value="services">Services</button>
           <button class="chip" type="button" aria-pressed="false" data-filter="category" data-value="jobs">Jobs</button>
@@ -84,18 +84,18 @@
         </div>
       </div>
 
-      <div class="filter-group">
-        <button class="filter-group__header" type="button" aria-expanded="false" aria-controls="filter-distance">Distance</button>
-        <div class="filter-group__options" id="filter-distance" hidden>
+      <div class="filter-group u-flex-col">
+        <button class="filter-group__header u-items-center" type="button" aria-expanded="false" aria-controls="filter-distance">Distance</button>
+        <div class="filter-group__options u-flex" id="filter-distance" hidden>
           <button class="chip" type="button" aria-pressed="false" data-filter="distance" data-value="1">Within 1 mi</button>
           <button class="chip" type="button" aria-pressed="false" data-filter="distance" data-value="5">Within 5 mi</button>
           <button class="chip" type="button" aria-pressed="false" data-filter="distance" data-value="25">Within 25 mi</button>
         </div>
       </div>
 
-      <div class="filter-group">
-        <button class="filter-group__header" type="button" aria-expanded="false" aria-controls="filter-price">Price</button>
-        <div class="filter-group__options" id="filter-price" hidden>
+      <div class="filter-group u-flex-col">
+        <button class="filter-group__header u-items-center" type="button" aria-expanded="false" aria-controls="filter-price">Price</button>
+        <div class="filter-group__options u-flex" id="filter-price" hidden>
           <button class="chip" type="button" aria-pressed="false" data-filter="price" data-value="under50">Under $50</button>
           <button class="chip" type="button" aria-pressed="false" data-filter="price" data-value="50to200">$50–$200</button>
           <button class="chip" type="button" aria-pressed="false" data-filter="price" data-value="over200">Over $200</button>
@@ -103,12 +103,12 @@
       </div>
     </aside>
 
-    <section class="results" aria-labelledby="results-heading">
-      <div class="results__toolbar">
+    <section class="results u-flex-col u-flex-1" aria-labelledby="results-heading">
+      <div class="results__toolbar u-items-center">
         <button class="btn btn--outline" type="button" aria-pressed="false" data-sort>Sort</button>
         <span class="results__count" id="results-count" aria-live="polite"></span>
       </div>
-      <div class="mobile-filters mobile-only" role="group" aria-label="Sort and filter">
+      <div class="mobile-filters mobile-only u-flex" role="group" aria-label="Sort and filter">
         <button class="chip chip--sort" type="button" aria-pressed="false" data-sort>Sort</button>
         <button class="chip" type="button" aria-pressed="false" data-filter="category" data-value="for-sale">For Sale</button>
         <button class="chip" type="button" aria-pressed="false" data-filter="category" data-value="services">Services</button>
@@ -120,11 +120,11 @@
         <button class="chip" type="button" aria-pressed="false" data-filter="price" data-value="50to200">$50–$200</button>
         <button class="chip" type="button" aria-pressed="false" data-filter="price" data-value="over200">Over $200</button>
       </div>
-      <ul class="listing-grid" id="results-grid"></ul>
+      <ul class="listing-grid u-flex-1" id="results-grid"></ul>
     </section>
   </main>
   </div>
 
-  <script src="app.js?v=202611160001"></script>
+  <script src="app.js?v=202611160002"></script>
 </body>
 </html>
