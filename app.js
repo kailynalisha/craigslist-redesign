@@ -548,7 +548,7 @@ function getDemoAccountProfile() {
       typeof profile.firstName === "string" &&
       typeof profile.lastName === "string" &&
       typeof profile.email === "string"
-        ? profile
+        ? { ...profile, phone: typeof profile.phone === "string" ? profile.phone : "" }
         : null;
   } catch {
     demoAccountProfile = null;
@@ -574,19 +574,44 @@ function updateAccountLabels() {
       popover.querySelector("[data-account-signout]").hidden = !email;
     }
   });
+  updateSettingsUI();
 }
 
-function openAccountDialog(onSignIn) {
+function openAccountDialog(onSignIn, mode = "login") {
   const dialog = document.getElementById("account-dialog");
   if (onSignIn) afterAccountSignIn = onSignIn;
   if (dialog.open) return;
 
   const form = dialog.querySelector(".account-dialog__form");
-  setAccountMode(dialog, "login");
+  setAccountMode(dialog, mode);
   form.reset();
   form.resetValidation?.();
   dialog.showModal();
-  form.elements.email.focus();
+  if (mode === "signup") form.elements.firstName.focus();
+  else form.elements.email.focus();
+}
+
+function openSettingsDialog() {
+  const dialog = document.getElementById("settings-dialog");
+  updateSettingsUI();
+  if (dialog.open) return;
+  dialog.showModal();
+  dialog.querySelector("[data-close-settings]").focus();
+}
+
+function updateSettingsUI() {
+  const dialog = document.getElementById("settings-dialog");
+  if (!dialog) return;
+  const isSignedIn = Boolean(getDemoAccountEmail());
+  dialog.querySelector("[data-settings-signedout]").hidden = isSignedIn;
+  dialog.querySelector("[data-settings-signedin]").hidden = !isSignedIn;
+  const profile = getDemoAccountProfile();
+  if (isSignedIn && profile) {
+    dialog.querySelector("[data-settings-email]").textContent = profile.email;
+    dialog.querySelector("#settings-first-name").value = profile.firstName;
+    dialog.querySelector("#settings-last-name").value = profile.lastName;
+    dialog.querySelector("#settings-phone").value = profile.phone || "";
+  }
 }
 
 function setAccountMode(dialog, mode) {
@@ -622,6 +647,9 @@ function setupAccountUI() {
   const navbar = document.querySelector(".navbar");
   const headerMenu = el("div", "account-menu account-menu--header");
   headerMenu.innerHTML = `
+    <button class="btn account-header account-settings" type="button" aria-label="Settings" data-settings-open>
+      <span aria-hidden="true">⚙</span><span class="account-settings__label">Settings</span>
+    </button>
     <button class="btn account-header" type="button" data-account-open aria-haspopup="true" aria-expanded="false">Log in / Sign up</button>
     <div class="account-popover" data-account-popover role="menu" hidden>
       <button class="account-popover__signout" type="button" role="menuitem" data-account-auth>Log in / Sign up</button>
@@ -696,6 +724,51 @@ function setupAccountUI() {
       <button class="btn btn--outline account-dialog__cancel" type="button" data-close-account>Cancel</button>
     </div>`;
   document.body.append(dialog);
+
+  const settingsDialog = el("dialog", "dialog settings-dialog");
+  settingsDialog.id = "settings-dialog";
+  settingsDialog.setAttribute("aria-labelledby", "settings-title");
+  settingsDialog.innerHTML = `
+    <div class="settings-dialog__inner">
+      <div class="settings-dialog__heading">
+        <h2 id="settings-title">Settings</h2>
+        <button class="account-dialog__dismiss" type="button" aria-label="Close settings" data-close-settings>×</button>
+      </div>
+      <section class="settings-dialog__theme" aria-label="Appearance">
+        <div>
+          <h3>Dark mode</h3>
+          <p data-theme-label>Light theme is on</p>
+        </div>
+        ${toggleMarkup()}
+      </section>
+      <section class="settings-dialog__section" data-settings-signedout>
+        <p>Sign in or create an account to manage your profile settings.</p>
+        <div class="settings-dialog__actions">
+          <button class="btn btn--container" type="button" data-settings-auth="signup">Sign up</button>
+          <button class="btn btn--outline" type="button" data-settings-auth="login">Sign in</button>
+        </div>
+      </section>
+      <div class="settings-dialog__section" data-settings-signedin hidden>
+        <p class="settings-dialog__email">Signed in as <strong data-settings-email></strong></p>
+        <form class="settings-dialog__profile">
+          <h3>Profile</h3>
+          <label for="settings-first-name">First name</label>
+          <input id="settings-first-name" name="firstName" type="text" autocomplete="given-name" required minlength="2" maxlength="40" />
+          <label for="settings-last-name">Last name</label>
+          <input id="settings-last-name" name="lastName" type="text" autocomplete="family-name" required minlength="2" maxlength="40" />
+          <label for="settings-phone">Phone number</label>
+          <input id="settings-phone" name="phone" type="tel" autocomplete="tel" maxlength="32" />
+          <button class="btn btn--container" type="submit">Save profile</button>
+          <p class="settings-dialog__status" role="status" hidden></p>
+        </form>
+        <section class="settings-dialog__password">
+          <h3>Password</h3>
+          <p>Password changes aren't available in this prototype because passwords are never stored. A live account would let you securely reset your password.</p>
+        </section>
+      </div>
+    </div>`;
+  document.body.append(settingsDialog);
+
   const form = dialog.querySelector(".account-dialog__form");
 
   // ---------- Real-time validation ----------
@@ -883,6 +956,41 @@ function setupAccountUI() {
       toggleAccountPopover(button);
     });
   });
+  headerMenu.querySelector("[data-settings-open]").addEventListener("click", openSettingsDialog);
+  settingsDialog.querySelector("[data-close-settings]").addEventListener("click", () => settingsDialog.close());
+  settingsDialog.querySelectorAll("[data-settings-auth]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const mode = button.dataset.settingsAuth;
+      settingsDialog.close();
+      openAccountDialog(() => settingsDialog.showModal(), mode);
+    });
+  });
+  settingsDialog.querySelector(".settings-dialog__profile").addEventListener("submit", (event) => {
+    event.preventDefault();
+    const profile = getDemoAccountProfile();
+    if (!profile || !getDemoAccountEmail()) {
+      updateSettingsUI();
+      return;
+    }
+
+    const settingsForm = event.currentTarget;
+    const status = settingsForm.querySelector(".settings-dialog__status");
+    const updatedProfile = {
+      ...profile,
+      firstName: settingsForm.elements.firstName.value.trim(),
+      lastName: settingsForm.elements.lastName.value.trim(),
+      phone: settingsForm.elements.phone.value.trim(),
+    };
+    demoAccountProfile = updatedProfile;
+    try {
+      sessionStorage.setItem("demo-account-profile", JSON.stringify(updatedProfile));
+      status.textContent = "Profile updated.";
+    } catch {
+      status.textContent = "Profile updated for this page only; browser session storage is unavailable.";
+    }
+    status.hidden = false;
+    updateAccountLabels();
+  });
   document.addEventListener("click", (event) => {
     if (event.target.closest("[data-account-signout]")) signOut();
   });
@@ -914,6 +1022,7 @@ function setupAccountUI() {
         firstName: form.elements.firstName.value.trim(),
         lastName: form.elements.lastName.value.trim(),
         email,
+        phone: "",
       };
     } else if (!profile || profile.email.toLowerCase() !== email.toLowerCase()) {
       form.setFieldError(
@@ -995,14 +1104,7 @@ function buildDrawer() {
       <a class="drawer__link" href="search.html?category=for-sale">For Sale</a>
       <a class="drawer__link" href="contact.html" ${page === "contact" ? 'aria-current="page"' : ""}>Contact Seller</a>
       <hr class="drawer__divider" />
-      <p class="drawer__section">SETTINGS</p>
-      <div class="drawer__row">
-        <div>
-          <strong>Dark mode</strong>
-          <small data-theme-label>Light theme is on</small>
-        </div>
-        ${toggleMarkup()}
-      </div>
+      <button class="drawer__link drawer__settings" type="button" data-settings-open>Settings</button>
     </nav>`;
   document.body.append(drawer);
 
@@ -1027,6 +1129,10 @@ function buildDrawer() {
     button.addEventListener("click", open);
   });
   drawer.querySelector("[data-close-menu]").addEventListener("click", close);
+  drawer.querySelector("[data-settings-open]").addEventListener("click", () => {
+    close();
+    openSettingsDialog();
+  });
   const accountButton = drawer.querySelector("[data-account-open]");
   accountButton.addEventListener("click", () => {
     if (getDemoAccountEmail()) {

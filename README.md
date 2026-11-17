@@ -33,6 +33,8 @@ Click **Log in / Sign up** in the desktop header (or in the ☰ mobile menu). Pr
 
 > Prototype only: no real accounts are created. The profile lives in this browser tab's session storage, and passwords are never saved.
 
+Use **Settings** in the header to change the theme. When signed in, the settings dialog also lets you update your name and phone number; password changes are unavailable because this prototype never stores passwords.
+
 ### How validation works
 - **Real time, not on submit.** Errors show when you leave a field (blur). After that, the field re-checks on every keystroke, so the error goes away as soon as you fix it. While you're still typing in a field for the first time, you only see positive feedback, never an error.
 - **Inline, next to the field.** Each message appears directly under its input. There are no alert boxes or error lists at the top of the page.
