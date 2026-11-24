@@ -4,12 +4,12 @@
 
 /* ---------- DATA ---------- */
 const CATEGORIES = {
-  "for-sale": { label: "For Sale", icon: "assets/categories/icon-for-sale.svg" },
-  services: { label: "Services", icon: "assets/categories/handshake-fill.svg" },
-  jobs: { label: "Jobs", icon: "assets/categories/icon-jobs.svg" },
-  community: { label: "Community", icon: "assets/categories/icon-people.svg" },
-  discussion: { label: "Discussion", icon: "assets/categories/chats-fill.svg" },
-  events: { label: "Events", icon: "assets/categories/calendar-blank-fill.svg" },
+  "for-sale": { label: "For Sale", priceLabel: "Price", icon: "assets/categories/icon-for-sale.svg" },
+  services: { label: "Services", priceLabel: "Rate", icon: "assets/categories/handshake-fill.svg" },
+  jobs: { label: "Jobs", priceLabel: "Pay rate", icon: "assets/categories/icon-jobs.svg" },
+  community: { label: "Community", priceLabel: "Price", icon: "assets/categories/icon-people.svg" },
+  discussion: { label: "Discussion", priceLabel: "Price", icon: "assets/categories/chats-fill.svg" },
+  events: { label: "Events", priceLabel: "Admission", icon: "assets/categories/calendar-blank-fill.svg" },
 };
 
 // The first 12 listings come from the Figma search-result frames.
@@ -574,6 +574,9 @@ function updateAccountLabels() {
       popover.querySelector("[data-account-signout]").hidden = !email;
     }
   });
+  document.querySelectorAll("[data-drawer-signout]").forEach((button) => {
+    button.hidden = !email;
+  });
   updateSettingsUI();
 }
 
@@ -928,6 +931,7 @@ function setupAccountUI() {
   });
 
   function signOut() {
+    if (!window.confirm("Are you sure you want to sign out?")) return;
     demoAccountEmail = "";
     try {
       sessionStorage.removeItem("demo-account-email");
@@ -1104,6 +1108,11 @@ function buildDrawer() {
     <button class="drawer__scrim" type="button" aria-label="Close menu" data-close-menu></button>
     <nav class="drawer__panel u-flex-col" aria-label="Main menu" role="dialog" aria-modal="true">
       <p class="drawer__title">Menu</p>
+      <a class="drawer__link" href="index.html" ${page === "home" ? 'aria-current="page"' : ""}>Home</a>
+      <a class="drawer__link" href="search.html?category=for-sale">For Sale</a>
+      <a class="drawer__link" href="contact.html" ${page === "contact" ? 'aria-current="page"' : ""}>Contact Seller</a>
+      <hr class="drawer__divider" />
+      <button class="drawer__link drawer__settings" type="button" data-settings-open>Settings</button>
       <div class="account-menu account-menu--drawer">
         <button class="drawer__link drawer__account" type="button" data-account-open aria-haspopup="true" aria-expanded="false">Log in / Sign up</button>
         <div class="account-popover" data-account-popover role="menu" hidden>
@@ -1111,11 +1120,7 @@ function buildDrawer() {
           <button class="account-popover__signout" type="button" role="menuitem" data-account-signout>Sign out</button>
         </div>
       </div>
-      <a class="drawer__link" href="index.html" ${page === "home" ? 'aria-current="page"' : ""}>Home</a>
-      <a class="drawer__link" href="search.html?category=for-sale">For Sale</a>
-      <a class="drawer__link" href="contact.html" ${page === "contact" ? 'aria-current="page"' : ""}>Contact Seller</a>
-      <hr class="drawer__divider" />
-      <button class="drawer__link drawer__settings" type="button" data-settings-open>Settings</button>
+      <button class="drawer__link drawer__signout" type="button" data-account-signout data-drawer-signout hidden>Sign out</button>
     </nav>`;
   document.body.append(drawer);
 
@@ -1584,6 +1589,11 @@ function initListingPage() {
   }
   const layout = document.querySelector(".listing__layout");
   const contactLinks = document.querySelectorAll("[data-contact-link]");
+  const photoViewer = document.getElementById("photo-viewer");
+  photoViewer.querySelector("[data-close-photo]").addEventListener("click", () => photoViewer.close());
+  photoViewer.addEventListener("click", (event) => {
+    if (event.target === photoViewer) photoViewer.close();
+  });
 
   // skeleton shimmer while the listing "loads"; contact buttons wait too
   layout.classList.add("is-loading");
@@ -1610,6 +1620,7 @@ function initListingPage() {
 
     document.title = `${heading} — craigslist`;
     document.getElementById("listing-title").textContent = heading;
+    document.getElementById("listing-price-label").textContent = category.priceLabel;
     document.getElementById("listing-price").textContent = formatPrice(item);
     document.getElementById("listing-price-row").hidden = item.price === null;
 
@@ -1625,8 +1636,18 @@ function initListingPage() {
     const listingImage = document.getElementById("listing-icon");
     const thumb = listingImage.parentElement;
     if (item.image) {
-      thumb.classList.add("listing__thumb--photo", "is-loading");
-      const done = () => thumb.classList.remove("is-loading");
+      const photoButton = el("button", "listing__thumb listing__thumb--photo is-loading");
+      photoButton.type = "button";
+      photoButton.setAttribute("aria-label", `Enlarge photo of ${heading}`);
+      photoButton.setAttribute("aria-haspopup", "dialog");
+      photoButton.addEventListener("click", () => {
+        const viewerImage = document.getElementById("photo-viewer-image");
+        viewerImage.src = item.image;
+        viewerImage.alt = heading;
+        photoViewer.showModal();
+      });
+
+      const done = () => photoButton.classList.remove("is-loading");
       listingImage.addEventListener("load", done, { once: true });
       listingImage.addEventListener("error", done, { once: true });
       listingImage.src = item.image;
@@ -1635,6 +1656,9 @@ function initListingPage() {
       listingImage.classList.add("listing__photo");
       if (item.imageInset) listingImage.classList.add("listing__photo--inset");
       if (listingImage.complete) done();
+
+      photoButton.append(listingImage);
+      thumb.replaceWith(photoButton);
     } else {
       listingImage.src = category.icon.replace("icon-for-sale.svg", "icon-for-sale-lg.svg");
     }

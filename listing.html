@@ -16,7 +16,7 @@
   <meta property="og:image" content="https://kailynalisha.github.io/craigslist-redesign/assets/branding/og-image.png" />
   <meta name="twitter:card" content="summary_large_image" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
-  <link rel="stylesheet" href="styles.css?v=202611241440" />
+  <link rel="stylesheet" href="styles.css?v=202611241729" />
   <script>
     try { document.documentElement.dataset.theme = localStorage.getItem("theme") || "light"; } catch (e) {}
   </script>
@@ -65,27 +65,25 @@
         <div class="listing__thumb">
           <img class="icon" id="listing-icon" src="assets/categories/icon-for-sale-lg.svg" width="48" height="48" alt="" />
         </div>
-        <div class="listing__facts desktop-only u-flex-col">
-          <span class="tag u-items-center" id="listing-tag">For Sale</span>
-          <div>
-            <p id="listing-condition-row"><strong>Condition</strong>: <span id="listing-condition"></span></p>
-            <p><strong>Posted</strong>: <span id="listing-posted"></span></p>
-          </div>
-        </div>
       </div>
 
-      <article class="listing__info u-flex-col u-desktop-flex-1">
+      <article class="listing__info u-flex-col">
+        <span class="tag listing__tag desktop-only u-items-center" id="listing-tag">For Sale</span>
         <h1 class="listing__title" id="listing-title"></h1>
-        <p class="listing__price" id="listing-price-row"><span class="desktop-only">Price: </span><span id="listing-price"></span></p>
+        <p class="listing__price" id="listing-price-row"><span class="listing__price-label desktop-only" id="listing-price-label">Price</span><span id="listing-price"></span></p>
+        <div class="listing__facts desktop-only u-desktop-flex-col">
+          <p id="listing-condition-row"><strong>Condition</strong>: <span id="listing-condition"></span></p>
+          <p><strong>Posted</strong>: <span id="listing-posted"></span></p>
+        </div>
+        <a class="btn btn--primary listing__contact desktop-only" href="contact.html" data-contact-link>Contact Seller</a>
         <p class="listing__meta mobile-only" id="listing-meta"></p>
         <div class="listing__desc u-flex-col" id="listing-desc"></div>
 
         <section class="location-card u-flex-col" aria-label="Location">
-          <h2 class="mobile-only">Location</h2>
+          <h2>Location</h2>
           <div class="location-card__text u-desktop-flex-col">
             <address id="listing-address"></address>
             <a class="location-card__directions" id="listing-directions" href="#" target="_blank" rel="noopener">Open in Google Maps</a>
-            <a class="btn btn--primary desktop-only" href="contact.html" data-contact-link>Contact Seller</a>
           </div>
           <div class="location-card__map u-desktop-flex-1" id="listing-map">
             <img class="icon" src="assets/location-on.svg" width="40" height="40" alt="Map placeholder" />
@@ -99,7 +97,12 @@
     </div>
   </main>
 
+    <dialog class="photo-viewer" id="photo-viewer" aria-label="Enlarged listing photo">
+      <button class="btn btn--outline photo-viewer__close" type="button" data-close-photo>Close</button>
+      <img class="photo-viewer__image" id="photo-viewer-image" alt="" />
+    </dialog>
+
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-  <script src="app.js?v=202611241440"></script>
+    <script src="app.js?v=202611241728"></script>
 </body>
 </html>
