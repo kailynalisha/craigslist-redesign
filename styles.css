@@ -521,6 +521,7 @@ img {
 }
 
 .category-card {
+  gap: 12px;
   height: 96px;
   padding: 24px 40px;
   background: var(--container);
@@ -535,6 +536,13 @@ img {
     transform 0.2s ease,
     filter 0.2s ease,
     box-shadow 0.2s ease;
+}
+
+.category-card__icon {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  filter: brightness(0) invert(1);
 }
 
 .category-card:hover {
@@ -1756,6 +1764,11 @@ img {
   .category-card {
     height: 154px;
     font-size: 36px;
+  }
+
+  .category-card__icon {
+    width: 48px;
+    height: 48px;
   }
 
   /* search results */

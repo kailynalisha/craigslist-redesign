@@ -4,12 +4,12 @@
 
 /* ---------- DATA ---------- */
 const CATEGORIES = {
-  "for-sale": { label: "For Sale", icon: "assets/icon-for-sale.svg" },
-  services: { label: "Services", icon: "assets/icon-jobs.svg" },
-  jobs: { label: "Jobs", icon: "assets/icon-jobs.svg" },
-  community: { label: "Community", icon: "assets/icon-people.svg" },
-  discussion: { label: "Discussion", icon: "assets/icon-people.svg" },
-  events: { label: "Events", icon: "assets/icon-people.svg" },
+  "for-sale": { label: "For Sale", icon: "assets/categories/icon-for-sale.svg" },
+  services: { label: "Services", icon: "assets/categories/handshake-fill.svg" },
+  jobs: { label: "Jobs", icon: "assets/categories/icon-jobs.svg" },
+  community: { label: "Community", icon: "assets/categories/icon-people.svg" },
+  discussion: { label: "Discussion", icon: "assets/categories/chats-fill.svg" },
+  events: { label: "Events", icon: "assets/categories/calendar-blank-fill.svg" },
 };
 
 // The first 12 listings come from the Figma search-result frames.
