@@ -1993,6 +1993,16 @@ img {
 
   .listing__tag {
     align-self: flex-start;
+    height: 28px;
+    padding: 0 10px;
+    font-size: 14px;
+    background: var(--subnav);
+    color: #111111;
+  }
+
+  :root[data-theme="dark"] .listing__tag {
+    background: var(--container);
+    color: var(--on-primary);
   }
 
   .listing__title {
